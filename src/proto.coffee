@@ -8,7 +8,7 @@ CoffeeScript    = require 'coffee-script'
 Jade            = require 'jade'
 Stylus          = require 'stylus'
 
-proto_version = "0.0.1"
+proto_version = "0.0.2"
 
 
 CWD = process.cwd()
@@ -52,7 +52,7 @@ initializeProject = (project_name) ->
     sys.puts("Initializing '#{ project_name }' in #{ project_path }")
 
     if not fs.existsSync(project_path)
-        fs.mkdir(project_path)
+        fs.mkdirSync(project_path)
         for file_name in ['script.coffee', 'markup.jade', 'style.styl', 'settings.json', 'notes.md']
             fs.writeFileSync("#{ project_path }/#{ file_name }", templates[file_name])
         quitWithMsg("#{ project_name } initialized!")
