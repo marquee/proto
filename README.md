@@ -17,6 +17,8 @@ or from source
 
 `cake build` will compile `src/proto.coffee` into `lib/proto.js` (ignored by git).
 
+Proto needs to be installed globally using `-g` so it can create the necessary command in `/usr/local/bin`.
+
 
 ## Usage
 
@@ -55,13 +57,12 @@ To have additional libraries loaded, add them to the `script_libraries` or `styl
 
 ### Gist a project
 
-#### Anonymous
-
 To create a GitHub [Gist](https://gist.github.com) with the project's contents:
 
     proto -g <project_name>
+    proto -g <project_name> --public
 
-This will upload the five files in the specified project folder to a private, anonymous Gist. But, this isn't terribly useful besides one-off sharing, so *Authenticated* Gists are recommended.
+This will upload the five files in the specified project folder to an anonymous Gist. By default, the Gist is private. Adding the `--public` flag will make it a public Gist. But, anonymous Gists aren't terribly useful besides one-off sharing, so *Authenticated* Gists are recommended.
 
 #### Authenticated
 
@@ -72,14 +73,14 @@ To create the Gist under your username, first authenticate with GitHub using:
 
 This will use the GitHub API to [generate an access token](http://developer.github.com/v3/oauth/#create-a-new-authorization) that is stored in `~/.proto-cli`. Your username and password are *never* stored.
 
-Now, all Gists you create will be associated with your account. This has several benefits, including making the Proto project a git repo with the remote set to the Gist, so you can keep updating the Proto's Gist.
+Now, all Gists you create will be associated with your account. This has several benefits, including making the Proto project a git repo with the remote set to the Gist, so you can keep updating the Proto's Gist. Using `proto -g <project_name>` on a project that has already been Gisted with authentication will commit and push your changes to the same Gist, instead of creating a new one.
 
 
 ## FAQ
 
 ### Why not LiveReload?
 
-LiveReload is awesome and works great — in fact it works really well alongside Proto — but doesn't serve the files (and nor should it). Certain JavaScript features require the file to be served instead of loaded using `file://` for security reasons. Proto is simpler to use and provides an easy way to initialize the project. It is also intended to be opinionated about the languages and structure it supports, creating simplicity through useful defaults.
+[LiveReload](http://livereload.com/) is awesome and works great — in fact it works really well alongside Proto — but doesn't serve the files (and nor should it). Certain JavaScript features require the file to be served instead of loaded using `file://` for security reasons. Proto is simpler to use and provides an easy way to initialize the project. It is also intended to be opinionated about the languages and structure it supports, creating simplicity through useful defaults.
 
 ### Why can't I have (more/fewer/other) files?
 
