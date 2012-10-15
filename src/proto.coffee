@@ -3,12 +3,13 @@ sys             = require 'sys'
 
 cli             = require 'cli'
 express         = require 'express'
+rest            = require 'restler'
 
 CoffeeScript    = require 'coffee-script'
 Jade            = require 'jade'
 Stylus          = require 'stylus'
 
-proto_version = "0.0.2"
+proto_version = "0.0.3"
 
 
 CWD = process.cwd()
@@ -59,6 +60,45 @@ initializeProject = (project_name) ->
     else
         quitWithMsg("Error: #{ project_path } already exists")
 
+gistProject = (project_name) ->
+    # TODO: DRY this up
+    project_path = "#{ CWD }/#{ project_name }"
+
+    if not fs.existsSync(project_path)
+        quitWithMsg("Error: #{ project_name } not found. Initialize with `proto -i #{ project_name }`.")
+
+    post_data =
+        description   : 'A proto project: https://github.com/droptype/proto'
+        public        : false
+        files         : {}
+
+    sources = [
+        'script.coffee'
+        'markup.jade'
+        'style.styl'
+        'settings.json'
+        'notes.md'
+    ]
+
+
+    for f in sources
+        do ->
+            source = project_path + '/' + f
+            content = fs.readFileSync(source)
+            post_data.files[f] =
+                content: content.toString()
+
+    GIST_API = 'https://api.github.com/gists'
+    post_req = rest.post GIST_API,
+        data: JSON.stringify(post_data)
+    post_req.on 'complete', (data, response) ->
+        if response.statusCode is 201
+            gist_url = data.html_url
+            quitWithMsg("Success! Gist created at #{ gist_url }")
+        else
+            sys.puts("Error: #{ request.statusCode }")
+            sys.puts(data)
+
 
 
 serveProject = (project_name, port) ->
@@ -80,7 +120,7 @@ serveProject = (project_name, port) ->
         settings = JSON.parse(settings_raw)
         # TODO: Validate settings
         if settings.version isnt proto_version
-            quitWithMsg("Error: #{ project_name }'s version (#{ settings.version }) does not match proto's (#{ proto_version })")
+            quitWithMsg("Error: #{ project_name }'s version (#{ settings.version }) does not match Proto's (#{ proto_version })")
         return settings
 
     compileScriptFile = (script_source_file) ->
@@ -175,5 +215,7 @@ exports.run = (args, options) ->
 
     if options.init
         initializeProject(new_project)
+    else if options.gist
+        gistProject(new_project)
     else
         serveProject(new_project, options.port)

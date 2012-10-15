@@ -50,6 +50,14 @@ The source files are compiled and inserted into a full `html` template. Librarie
 
 To have additional libraries loaded, add them to the `script_libraries` or `style_libraries`. They must be served from somewhere else, like a [CDN](http://cdnjs.com/).
 
+### Gist a project
+
+To create a GitHub [gist](https://gist.github.com) with the project's contents:
+
+    proto -g <project_name>
+
+This will upload the five files in the specified project folder to a private, anonymous gist.
+
 
 ## FAQ
 

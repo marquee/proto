@@ -8,7 +8,8 @@ var cli  = require('cli');
 
 cli.parse({
     init : ['i', 'Initialize project'],
-    port : ['p', 'Serve on port', 'number', 5000]
+    port : ['p', 'Serve on port', 'number', 5000],
+    gist : ['g', 'Send to gist']
 });
 
 cli.main(function(args, options) {
