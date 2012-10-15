@@ -1,8 +1,10 @@
 # Proto
 
-Proto is a front-end web prototyping tool, combining markup (.jade), script (.coffee), and style (.styl) into a single page. It creates a set of files each representing one of those three facets of the page, plus files for notes and settings, and serves up their rendered form. Every time the page is loaded, those files are compiled on-the-fly. It's helpful for creating prototypes using CoffeeScript, Jade, and Stylus, without having to set up a build process and environment.
+Proto is a front-end web prototyping tool, combining markup ([Jade](http://jade-lang.com/)), script ([CoffeeScript](http://coffeescript.org)), and style ([Stylus](http://learnboost.github.com/stylus/)) into a single page. It creates a set of files each representing one of those three facets of the page, plus files for notes and settings, and serves up their rendered form. Every time the page is loaded, those files are compiled on-the-fly. It's helpful for creating prototypes using CoffeeScript, Jade, and Stylus, without having to set up a build process and environment.
 
 ## Installation
+
+Proto is a command-line tool built in [Node](http://nodejs.org/), specifically [CoffeeScript](http://coffeescript.org), and is available through [npm](https://npmjs.org/).
 
     npm install -g proto-cli
 
@@ -22,7 +24,7 @@ or from source
 
     proto -i <project_name>
 
-Initializes the project by creating a folder with the specified name and adding five files: `markup.jade` ([Jade](http://jade-lang.com/)), `script.coffee` ([CoffeeScript](http://coffeescript.org)), `style.styl` ([Stylus](http://learnboost.github.com/stylus/)), `settings.json`, and `notes.md`.
+Initializes the project by creating a folder with the specified name and adding five files: `markup.jade`, `script.coffee`, `style.styl`, `settings.json`, and `notes.md`.
 
 e.g. `proto -i my_project` creates a folder called `my_project` in the current working directory
 
@@ -53,11 +55,24 @@ To have additional libraries loaded, add them to the `script_libraries` or `styl
 
 ### Gist a project
 
-To create a GitHub [gist](https://gist.github.com) with the project's contents:
+#### Anonymous
+
+To create a GitHub [Gist](https://gist.github.com) with the project's contents:
 
     proto -g <project_name>
 
-This will upload the five files in the specified project folder to a private, anonymous gist.
+This will upload the five files in the specified project folder to a private, anonymous Gist. But, this isn't terribly useful besides one-off sharing, so *Authenticated* Gists are recommended.
+
+#### Authenticated
+
+To create the Gist under your username, first authenticate with GitHub using:
+
+    proto --github <username> <password>
+    proto --github <username> "<password with spaces>"
+
+This will use the GitHub API to [generate an access token](http://developer.github.com/v3/oauth/#create-a-new-authorization) that is stored in `~/.proto-cli`. Your username and password are *never stored*.
+
+Now, all Gists you create will be associated with your account. This has several benefits, including making the Proto project a git repo with the remote set to the Gist, so you can keep updating the Proto's Gist.
 
 
 ## FAQ

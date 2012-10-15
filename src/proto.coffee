@@ -3,20 +3,32 @@ sys             = require 'sys'
 
 cli             = require 'cli'
 express         = require 'express'
+git             = require 'gitjs'
 rest            = require 'restler'
+
 
 CoffeeScript    = require 'coffee-script'
 Jade            = require 'jade'
 Stylus          = require 'stylus'
 
-proto_version = "0.0.3"
+proto_version = "0.0.4"
 
 
 CWD = process.cwd()
 
+pad = (val) ->
+    if val < 10
+        return "0#{ val }"
+    else
+        return val.toString()
 
 stamp = (args...) ->
-    sys.puts("#{ new Date() }: #{ args.join(' ') }")
+    t = new Date()
+    hour = pad(t.getHours())
+    min = pad(t.getMinutes())
+    sec = pad(t.getSeconds())
+    t = "#{ hour }:#{ min }:#{ sec }"
+    sys.puts("#{ t }: #{ args.join(' ') }")
 
 quitWithMsg = (message) ->
     stamp(message)
@@ -24,14 +36,16 @@ quitWithMsg = (message) ->
 
 
 
-initializeProject = (project_name) ->
+initializeProject = (project_name, from_gist=false) ->
+    # if from gist, pull from api, get name from settings, create folder with name, init with gist contents
     templates =
         'script.coffee' : 'console.log "loaded"\n\n\n'
         'markup.jade'   : 'h1 Hello, world!\n\n\n'
         'style.styl'    : 'h1\n    font-weight 300\n    font-family Helvetica\n\n\n'
         'notes.md'      : "# #{ project_name }\n\n\n"
         'settings.json' : """{
-            "version": "#{ proto_version }",
+            "name": "#{ project_name }",
+            "proto_version": "#{ proto_version }",
             "script_libraries": [
                 "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.1/underscore-min.js",
                 "https://cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.0/underscore.string.min.js",
@@ -60,16 +74,96 @@ initializeProject = (project_name) ->
     else
         quitWithMsg("Error: #{ project_path } already exists")
 
-gistProject = (project_name) ->
+
+
+gistProject = (project_name, public_gist=false) ->
     # TODO: DRY this up
     project_path = "#{ CWD }/#{ project_name }"
 
     if not fs.existsSync(project_path)
         quitWithMsg("Error: #{ project_name } not found. Initialize with `proto -i #{ project_name }`.")
 
+    if fs.existsSync(project_path + '/.git')
+        updateGist(project_name, project_path)
+    else
+        createNewGist(project_name, project_path, public_gist)
+
+
+
+updateGist = (project_name, project_path) ->
+    git.open project_path, false, (err, repo) ->
+        if err?
+            quitWithMsg("Unable to open git repo: #{ err }")
+        else
+            # Reconstruct the Gist url using the ID extracted from the git remote
+            repo.run 'remote show origin', (err, stdout, stderr) ->
+                if err?
+                    quitWithMsg("Unable to get remotes: #{ err }")
+                else
+                    # stdout looks like:
+                    #
+                    #     * remote origin
+                    #     Fetch URL: git@gist.github.com:<id>.git
+                    #     Push  URL: git@gist.github.com:<id>.git
+                    #     ...
+                    line = stdout.split('\n')[2]
+                    id = line.split(':')[2].split('.')[0]
+                    url = "https://gist.github.com/#{ id }"
+                    stamp("Updating Gist at: #{ url }")
+                    repo.commitAll '', (err, stdout, stderr) ->
+                        if err?
+                            quitWithMsg("Unable to commit changes (probably no changes?): #{ err }")
+                        else
+                            repo.run 'push origin master', (err, stdout, stderr) ->
+                                if err?
+                                    quitWithMsg("Unable to push changes: #{ err }")
+                                else
+                                    quitWithMsg("Successfully updated Gist: #{ url }")
+
+
+
+getAuthorization = ->
+    target_path = process.env.HOME + '/.proto-cli'
+    if fs.existsSync(target_path)
+        auth_file = fs.readFileSync(target_path)
+        try
+            auth_obj = JSON.parse(auth_file)
+        catch e
+            quitWithMsg("Error: Unable to read the access token in #{ target_path }. Please reauthenticate with `proto --github <username> <password>` or delete ~/.proto-cli")
+        access_token = auth_obj.token
+    else
+        access_token = null
+
+    return access_token
+
+
+
+initializeRepo = (project_path, git_push_url, html_url) ->
+    git.open project_path, true, (err, repo) ->
+        if err?
+            quitWithMsg("Unable to initialize a git repo: #{ err }")
+        repo.run 'remote add origin ?', [git_push_url], (err, stdout, stderr ) ->
+            if err?
+                quitWithMsg("Unable to add the remote to the git repo: #{ err }")
+            else
+                stamp("Added remote #{ git_push_url }")
+                repo.run 'add .', (err, stdout, stderr) ->
+                    if err?
+                        quitWithMsg(err)
+                    else
+                        repo.run 'pull -f origin master', (err, stdout, stderr) ->
+                            if err?
+                                quitWithMsg(err)
+                            else
+                                quitWithMsg("Project initialized as git repo with #{ git_push_url } remote")
+
+
+
+createNewGist = (project_name, project_path, public_gist) ->
+
     post_data =
         description   : 'A proto project: https://github.com/droptype/proto'
-        public        : false
+        public        : public_gist
         files         : {}
 
     sources = [
@@ -80,7 +174,6 @@ gistProject = (project_name) ->
         'notes.md'
     ]
 
-
     for f in sources
         do ->
             source = project_path + '/' + f
@@ -88,16 +181,51 @@ gistProject = (project_name) ->
             post_data.files[f] =
                 content: content.toString()
 
+    # try getting authorization token
+    access_token = getAuthorization()
+
     GIST_API = 'https://api.github.com/gists'
-    post_req = rest.post GIST_API,
+    request_options =
         data: JSON.stringify(post_data)
+
+    if access_token
+        stamp('Creating authenticated Gist')
+        request_options.headers =
+            Authorization: "token #{ access_token }"
+    else
+        stamp("Creating anonymous Gist")
+
+    post_req = rest.post(GIST_API, request_options)
+        
     post_req.on 'complete', (data, response) ->
         if response.statusCode is 201
-            gist_url = data.html_url
-            quitWithMsg("Success! Gist created at #{ gist_url }")
+            stamp("Success! Gist created at #{ data.html_url }")
+            initializeRepo(project_path, data.git_push_url, data.html_url)
         else
-            sys.puts("Error: #{ request.statusCode }")
-            sys.puts(data)
+            stamp("Error: #{ response.statusCode }")
+            sys.puts(JSON.stringify(data))
+            if response.statusCode is 401
+                stamp("The token in ~/.proto-cli is invalid. Please reauthenticate with `proto --github <username> <password>` or delete ~/.proto-cli")
+
+
+
+authWithGitHub = (username, password) ->
+    AUTH_API = 'https://api.github.com/authorizations'
+    post_req = rest.post AUTH_API,
+        username: username
+        password: password
+        data: JSON.stringify
+            scopes      : ["gist"]
+            note        : "Proto"
+            note_url    : "https://github.com/droptype/proto"
+    post_req.on 'complete',  (data, response) ->
+        if response.statusCode is 201
+            target_path = process.env.HOME + '/.proto-cli'
+            fs.writeFileSync(target_path, JSON.stringify(data))
+            quitWithMsg("Success! GitHub auth token stored in #{ target_path }")
+        else
+            sys.puts("Error: #{ response.statusCode }")
+            sys.puts(JSON.stringify(data))
 
 
 
@@ -119,8 +247,8 @@ serveProject = (project_name, port) ->
         settings_raw = fs.readFileSync(settings_source_file)
         settings = JSON.parse(settings_raw)
         # TODO: Validate settings
-        if settings.version isnt proto_version
-            quitWithMsg("Error: #{ project_name }'s version (#{ settings.version }) does not match Proto's (#{ proto_version })")
+        if settings.proto_version isnt proto_version
+            quitWithMsg("Error: #{ project_name }'s proto_version (#{ settings.proto_version }) does not match Proto's (#{ proto_version })")
         return settings
 
     compileScriptFile = (script_source_file) ->
@@ -191,6 +319,7 @@ serveProject = (project_name, port) ->
         return output
 
     serveContent = ->
+        # TODO: just use stack (included in cli)
         stamp('Creating server')
         app = express()
 
@@ -213,9 +342,13 @@ exports.run = (args, options) ->
             msg = 'Error: Please specify a project name, eg `proto <project_name>`'
         quitWithMsg(msg)
 
-    if options.init
-        initializeProject(new_project)
+    if options.github
+        username = args[0]
+        password = args[1]
+        authWithGitHub(username, password)
+    else if options.init
+        initializeProject(new_project, options.gist)
     else if options.gist
-        gistProject(new_project)
+        gistProject(new_project, options.public)
     else
         serveProject(new_project, options.port)

@@ -6,10 +6,14 @@ var lib  = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
 
 var cli  = require('cli');
 
+cli.enable('version', 'status')
+
 cli.parse({
-    init : ['i', 'Initialize project'],
-    port : ['p', 'Serve on port', 'number', 5000],
-    gist : ['g', 'Send to gist']
+    init     : ['i', 'Initialize project'],
+    port     : ['p', 'Serve on port', 'number', 5000],
+    gist     : ['g', 'Send to gist'],
+    github   : [false, 'Authenticate with GitHub: --github_auth username password'],
+    "public" : [false, 'Make a public gist'] 
 });
 
 cli.main(function(args, options) {
