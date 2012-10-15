@@ -16,6 +16,9 @@ CoffeeScript    = require 'coffee-script'
 Jade            = require 'jade'
 Stylus          = require 'stylus'
 
+proto_version = "0.0.1"
+
+
 CWD = process.cwd()
 
 
@@ -33,8 +36,24 @@ initializeProject = (project_name) ->
         'script.coffee' : 'console.log "loaded"\n\n\n'
         'markup.jade'   : 'h1 Hello, world!\n\n\n'
         'style.styl'    : 'h1\n    font-weight 300\n    font-family Helvetica\n\n\n'
-        'settings.json' : '{}'
         'notes.md'      : "# #{ project_name }\n\n\n"
+        'settings.json' : """{
+            "version": "#{ proto_version }",
+            "script_libraries": [
+                "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.1/underscore-min.js",
+                "https://cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.0/underscore.string.min.js",
+                "https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.3.3/coffee-script.min.js",
+                "https://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js",
+                "https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js",
+                "https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.9.0/jquery-ui.min.js",
+                "https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js",
+                "https://raw.github.com/Marak/Faker.js/master/Faker.js"
+            ],
+            "style_libraries": [
+                "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css"
+            ]
+        }"""
+
 
     project_path = "#{ CWD }/#{ project_name }"
 
@@ -64,6 +83,14 @@ serveProject = (project_name, port) ->
 
     sys.puts("Working on #{ project_name }\n#{ project_path }")
 
+    loadSettings = (settings_source_file) ->
+        settings_raw = fs.readFileSync(settings_source_file)
+        settings = JSON.parse(settings_raw)
+        # TODO: Validate settings
+        if settings.version isnt proto_version
+            quitWithMsg("Error: #{ project_name }'s version (#{ settings.version }) does not match proto's (#{ proto_version })")
+        return settings
+
     compileScriptFile = (script_source_file) ->
         stamp('Compiling script')
 
@@ -85,21 +112,26 @@ serveProject = (project_name, port) ->
             compiled_style = data
         return compiled_style
 
+    compileScriptLibraries = (settings) ->
+        script_libs = ''
+        for lib in settings.script_libraries
+            script_libs += "<script src='#{ lib }'></script>"
+        return script_libs
+
+    compileStyleLibraries = (settings) ->
+        style_libs = ''
+        for lib in settings.style_libraries
+            style_libs += "<link rel='stylesheet' href='#{ lib }' type='text/css'>"
+        return style_libs
+
     compositePage = (compiled) ->
         page = """
         <!doctype html>
         <html>
         <head>
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.1/underscore-min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.0/underscore.string.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.3.3/coffee-script.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.9.0/jquery-ui.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js"></script>
-            <script src="https://raw.github.com/Marak/Faker.js/master/Faker.js"></script>
-            <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9/themes/base/jquery.ui.all.css">
+            #{ compiled.script_libraries }
+            #{ compiled.style_libraries }
             <style>
                 #{ compiled.style }
             </style>
@@ -116,15 +148,18 @@ serveProject = (project_name, port) ->
 
     doCompilation = ->
         stamp('Compiling all the things')
+        settings = loadSettings(sources.settings)
         output = compositePage
-            style   : compileStyleFile(sources.style)
-            script  : compileScriptFile(sources.script)
-            markup  : compileMarkupFile(sources.markup)
+            style               : compileStyleFile(sources.style)
+            script              : compileScriptFile(sources.script)
+            markup              : compileMarkupFile(sources.markup)
+            script_libraries    : compileScriptLibraries(settings)
+            style_libraries     : compileStyleLibraries(settings)
         return output
 
     serveContent = ->
         stamp('Creating server')
-        app = express.createServer()
+        app = express()
 
         app.get '/', (req, res) ->
             res.send(doCompilation())
