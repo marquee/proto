@@ -4,7 +4,7 @@ Proto is a front-end web prototyping tool, combining markup (.jade), script (.co
 
 ## Installation
 
-    npm install proto-cli
+    npm install -g proto-cli
 
 or from source
 
