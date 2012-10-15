@@ -1,6 +1,6 @@
 # Proto
 
-Proto is a front-end web prototyping tool, combining markup ([Jade](http://jade-lang.com/)), script ([CoffeeScript](http://coffeescript.org)), and style ([Stylus](http://learnboost.github.com/stylus/)) into a single page. It creates a set of files each representing one of those three facets of the page, plus files for notes and settings, and serves up their rendered form. Every time the page is loaded, those files are compiled on-the-fly. It's helpful for creating prototypes using CoffeeScript, Jade, and Stylus, without having to set up a build process and environment.
+[Proto](https://github.com/droptype/proto) is a front-end web prototyping tool, combining markup ([Jade](http://jade-lang.com/)), script ([CoffeeScript](http://coffeescript.org)), and style ([Stylus](http://learnboost.github.com/stylus/)) into a single page. It creates a set of files each representing one of those three facets of the page, plus files for notes and settings, and serves up their rendered form. Every time the page is loaded, those files are compiled on-the-fly. It's helpful for creating prototypes using CoffeeScript, Jade, and Stylus, without having to set up a build process and environment.
 
 ## Installation
 
@@ -48,7 +48,7 @@ Or specify a port:
 
 This starts a server that serves the compiled markup, script, and style on the specified port (default 5000). The source files are compiled every time the page is requested.
 
-The source files are compiled and inserted into a full `html` template. Libraries specified in `settings.json`, and the CSS compiled from `style.styl`, are added to the `<head>` of the page. `markup.jade` gets compiled to HTML and inserted into the `<body>`, and `script.coffee` gets compiled to JavaScript and added to the end of the `<body>`. (Take a peak at the Proto source for the [full template](https://github.com/droptype/proto/blob/master/src/proto.coffee#L159) it uses.)
+The source files are compiled and inserted into a full `html` template. Libraries specified in `settings.json`, and the CSS compiled from `style.styl`, are added to the `<head>` of the page. `markup.jade` gets compiled to HTML and inserted into the `<body>`, and `script.coffee` gets compiled to JavaScript and added to the end of the `<body>`. (Take a peak at the Proto source for the [full template](https://github.com/droptype/proto/blob/master/src/proto.coffee#L287) it uses.)
 
 To have additional libraries loaded, add them to the `script_libraries` or `style_libraries`. They must be served from somewhere else, like a [CDN](http://cdnjs.com/).
 
@@ -70,7 +70,7 @@ To create the Gist under your username, first authenticate with GitHub using:
     proto --github <username> <password>
     proto --github <username> "<password with spaces>"
 
-This will use the GitHub API to [generate an access token](http://developer.github.com/v3/oauth/#create-a-new-authorization) that is stored in `~/.proto-cli`. Your username and password are *never stored*.
+This will use the GitHub API to [generate an access token](http://developer.github.com/v3/oauth/#create-a-new-authorization) that is stored in `~/.proto-cli`. Your username and password are *never* stored.
 
 Now, all Gists you create will be associated with your account. This has several benefits, including making the Proto project a git repo with the remote set to the Gist, so you can keep updating the Proto's Gist.
 
@@ -88,5 +88,5 @@ Convention. Proto restricts the sources to one file for each type to limit the k
 
 ## License
 
-Unlicensed aka Public Domain. See /UNLICENSE for more information.
+Unlicensed aka Public Domain. See [/UNLICENSE](https://github.com/droptype/proto/blob/master/UNLICENSE) for more information.
 
