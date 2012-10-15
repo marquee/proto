@@ -22,16 +22,16 @@ or from source
 
     proto -i <project_name>
 
-Initializes the project by creating a folder with the specified name and adding five files: `markup.jade`, `script.coffee`, `style.styl`, `settings.json`, and `notes.md`.
+Initializes the project by creating a folder with the specified name and adding five files: `markup.jade` ([Jade](http://jade-lang.com/)), `script.coffee` ([CoffeeScript](http://coffeescript.org)), `style.styl` ([Stylus](http://learnboost.github.com/stylus/)), `settings.json`, and `notes.md`.
 
 e.g. `proto -i my_project` creates a folder called `my_project` in the current working directory
 
     my_project/
-        markup.jade       - the source for the markup code, in [Jade](http://jade-lang.com/)
-        script.coffee     - the source for the script code, in [CoffeeScript](http://coffeescript.org)
-        style.styl        - the source for the style code, in [Stylus](http://learnboost.github.com/stylus/)
+        markup.jade       - the source for the markup code
+        script.coffee     - the source for the script code
+        style.styl        - the source for the style code
         settings.json     - settings for the project, specifically extra libraries to include into the page
-        notes.coffee      - a place for extra notes
+        notes.md          - a place for extra notes
 
 
 ### Work on a project
@@ -46,9 +46,10 @@ Or specify a port:
 
 This starts a server that serves the compiled markup, script, and style on the specified port (default 5000). The source files are compiled every time the page is requested.
 
-The source files are compiled and inserted into a full `html` template. Libraries specified in `settings.json`, and the CSS compiled from `style.styl`, are added to the `<head>` of the page. `markup.jade` gets compiled to HTML and inserted into the `<body>`, and `script.coffee` gets compiled to JavaScript and added to the end of the `<body>`.
+The source files are compiled and inserted into a full `html` template. Libraries specified in `settings.json`, and the CSS compiled from `style.styl`, are added to the `<head>` of the page. `markup.jade` gets compiled to HTML and inserted into the `<body>`, and `script.coffee` gets compiled to JavaScript and added to the end of the `<body>`. (Take a peak at the Proto source for the [full template](https://github.com/droptype/proto/blob/master/src/proto.coffee#L159) it uses.)
 
 To have additional libraries loaded, add them to the `script_libraries` or `style_libraries`. They must be served from somewhere else, like a [CDN](http://cdnjs.com/).
+
 
 ### Gist a project
 
@@ -65,7 +66,7 @@ This will upload the five files in the specified project folder to a private, an
 
 LiveReload is awesome and works great — in fact it works really well alongside Proto — but doesn't serve the files (and nor should it). Certain JavaScript features require the file to be served instead of loaded using `file://` for security reasons. Proto is simpler to use and provides an easy way to initialize the project. It is also intended to be opinionated about the languages and structure it supports, creating simplicity through useful defaults.
 
-### Why can't I have (more|fewer|other) files?
+### Why can't I have (more/fewer/other) files?
 
 Convention. Proto restricts the sources to one file for each type to limit the kinds of things that can be built with it. It's a tool for prototyping relatively small interactions, kind of like a command-line version of [Pad Hacker](http://padhacker.net) or [JSFiddle](http://jsfiddle.net). Keeping the projects simple also makes it easy for others to understand quickly.
 
