@@ -146,7 +146,6 @@ initializeRepo = (project_path, git_push_url, html_url) ->
             if err?
                 quitWithMsg("Unable to add the remote to the git repo: #{ err }")
             else
-                stamp("Added remote #{ git_push_url }")
                 repo.run 'add .', (err, stdout, stderr) ->
                     if err?
                         quitWithMsg(err)
