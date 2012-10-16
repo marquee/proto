@@ -4,6 +4,8 @@
 
 See [this Marquee post](http://marquee.by/alecperkins/proto/) for an explanation of the motivation, as well as a walkthrough.
 
+[Example Proto project as Gist](https://gist.github.com/3894924)
+
 ## Installation
 
 Proto is a command-line tool built in [Node](http://nodejs.org/), specifically [CoffeeScript](http://coffeescript.org), and is available through [npm](https://npmjs.org/).
