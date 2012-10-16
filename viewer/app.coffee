@@ -1,13 +1,21 @@
-express = require 'express'
+cli = require 'cli'
 
-app = express()
-
-app.get '/', (request, response) ->
-  response.send('Hello World!')
+handleIndex = (request, response, next) ->
+    console.dir(response)
+    response.writeHead 200,
+        'Content-Type': 'text/html'
+    response.end('Hello World!')
 
 
 port = process.env.PORT or 5000
-app.listen port, ->
-  console.log("Listening on " + port)
+
+cli.createServer([
+    handleIndex
+]).listen(port)
 
 # Extract rendering/serving portion to own module shared by viewer and cli
+
+# Drop express for just Stack.
+# https://github.com/chriso/cli
+# https://github.com/creationix/creationix/blob/master/indexer.js
+# https://github.com/creationix/stack/wiki/Community-Modules
