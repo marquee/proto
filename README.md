@@ -93,7 +93,7 @@ Now, all Gists you create will be associated with your account. This has several
 
 ### Viewer
 
-Proto includes a web viewer running at [proto.es](http://proto.es), which will rendered the specified Gist the same as the command-line would. It allows for easy sharing of the rendered Proto project, even specific versions of it (since it's just a git repo).
+Proto includes a web viewer running at [proto.es](http://proto.es), which will render the specified Gist the same as the command-line would. It allows for easy sharing of the rendered Proto project, even specific versions of it (since it's just a git repo).
 
 Example with the [sample project](https://gist.github.com/3894924): [proto.es/3894924](http://proto.es/3894924) ([older version](http://proto.es/3894924/e7496f08d10dce02db7209473912a1aa0676ce13))
 
