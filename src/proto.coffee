@@ -43,10 +43,11 @@ projectPath = (project_name) ->
 # Fetch a Gist from the GitHub API. Calls the callback whether or not the
 # request was successful.
 getGist = (url, cb) ->
+getGist = (url, callback) ->
     GIST_API = 'https://api.github.com/gists'
     post_req = rest.get(GIST_API + url)
     post_req.on 'complete', (data, response) ->
-        cb(data, response.statusCode)
+        callback(data, response.statusCode)
 
 
 # Initialize a project using the specified project name and the default
@@ -78,23 +79,24 @@ initializeProject = (project_name, from_gist=false, cli_args) ->
             if status_code isnt 200
                 quitWithMsg("Unable to fetch gist: #{ status_code }")
             else
+                # Load the Gist contents into a template for the init.
+                templates = {}
+                for proto_f in PROTO_FILES
+                    # If the needed file isn't in the Gist, warn and quit.
+                    if not data.files?[proto_f]?
+                        quitWithMsg("Gist is invalid Proto project, missing file: #{ proto_f }")
+                    else
+                        templates[proto_f] = data.files[proto_f].content
+
                 if cli_args[1]?
                     # If there is a second name specified, use that as the
                     # project name.
                     project_name = cli_args[1]
                 else
                     # Use the name specified name in the settings file.
-                    project_name = JSON.parse(data.files['settings.json'].content).name
+                    project_name = JSON.parse(templates['settings.json']).name
 
                 stamp("Fetched Gist, project name is #{ project_name }")
-
-                # Load the Gist contents into a template for the init.
-                templates = {}
-                for f in PROTO_FILES
-                    # If the needed file isn't in the Gist, warn and quit.
-                    if not data.files[f]?
-                        quitWithMsg("Gist is invalid Proto project, bad file: #{ k }")
-                    templates[k] = v.content
 
                 doInit(templates)
 
