@@ -16,8 +16,9 @@ getGist = (url, cb) ->
 
 handleIndex = (request, response, next) ->
     if request.url is '/'
-        html_content = 'Hello World!'
-        htmlResponse(response, html_content)
+        response.writeHead 303,
+            'Location': 'https://github.com/droptype/proto'
+        response.end()
     else
         next()
 
