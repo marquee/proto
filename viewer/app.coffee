@@ -28,12 +28,53 @@ validGist = (files) ->
             return false
     return true
 
-protoDisplayTag = (url) ->
-    return """
-        <div id="proto-cli-tag" style="position:fixed;bottom: 0;left: 0;border: 1px solid #ccc;opacity: 0.7;background: white; font-family: Menlo, Inconsolata, Courier New, monospace;">
+protoDisplayTag = (url, gist_data) ->
+    tag_html = ''
+    tag_html = """
+        <div id="proto-cli-tag" style="font-size: 10px; padding:0 0.25em;position:fixed;bottom: 0;left: 0;border: 1px solid #ccc;opacity: 0.7;background: white; font-family: Menlo, Inconsolata, Courier New, monospace;">
             <a href="http://proto.es">proto.es</a>: <a href="https://gist.github.com#{ url }">gist.github.com#{ url }</a>
+            <script>
+                function _ChangeProtoVersion(select) {
+                    var url = "/#{ gist_data.id }/";
+                    var selected_history = select.options[select.selectedIndex];
+                    window.location = url + selected_history.value;
+                }
+            </script>
+            <select onchange="_ChangeProtoVersion(this)">
+    """
+    if url.split('/').length > 2
+        tag_html += "<option value=''>Latest &raquo;</option>"
+    else
+        tag_html += "<option value='' disabled>On Latest Revision</option>"
+    for entry in gist_data.history
+        if '/' + gist_data.id + '/' + entry.version is url
+            selected = 'selected'
+        else
+            selected = ''
+        tag_html += "<option value='#{ entry.version }' #{ selected }>#{ entry.version.substring(0,8) }: #{ new Date(entry.committed_at) }</option>"
+
+    tag_html += """
+            </select>
         </div>
     """
+    # Add gaug.es tracking code 
+    if gist_data.public and process.env.GAUGES
+        tag_html += """
+            <script type="text/javascript">
+              var _gauges = _gauges || [];
+              (function() {
+                var t   = document.createElement('script');
+                t.type  = 'text/javascript';
+                t.async = true;
+                t.id    = 'gauges-tracker';
+                t.setAttribute('data-site-id', '#{ process.env.GAUGES }');
+                t.src = '//secure.gaug.es/track.js';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(t, s);
+              })();
+            </script>
+        """
+    return tag_html
 
 handleRequests = (request, response, next) ->
     unless request.url is '/favicon.ico'
@@ -49,7 +90,7 @@ handleRequests = (request, response, next) ->
                     script      : data.files['script.coffee'].content
                     markup      : data.files['markup.jade'].content
                     settings    : JSON.parse(data.files['settings.json'].content)
-                    extra_body  : protoDisplayTag(url)
+                    extra_body  : protoDisplayTag(url, data)
                 htmlResponse(response, content)
             else
                 raw_response = github_response.raw.toString()

@@ -57,7 +57,7 @@ compositePage = (compiled) ->
         <script>
             #{ compiled.script }
         </script>
-        #{ extra_body_markup }
+        #{ compiled.extra_body_markup }
     </body>
     </html>
     """
