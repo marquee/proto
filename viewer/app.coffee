@@ -29,7 +29,7 @@ handleRequests = (request, response, next) ->
         if url[url.length - 1] is '/'
             url = url.substring(0, url.length - 1)
 
-        getGist request.url, (data, github_response) ->
+        getGist url, (data, github_response) ->
             if github_response.statusCode is 200
                 content = renderer
                     style       : data.files['style.styl'].content
@@ -38,7 +38,13 @@ handleRequests = (request, response, next) ->
                     settings    : JSON.parse(data.files['settings.json'].content)
                 htmlResponse(response, content)
             else
-                content = "<a href='https://github.com/droptype/proto'>Proto</a> Gist not found at <br><br>api.github.com/gists#{ request.url }: #{ github_response.statusCode }<br><br>#{ github_response.raw.toString() }"
+                content = """
+                    <a href="https://github.com/droptype/proto">Proto</a> Gist not found at
+                    <a href="https://api.github.com/gists#{ url }">api.github.com/gists#{ request.url }</a>:
+                    #{ github_response.statusCode }
+                    <br><br>
+                    #{ github_response.raw.toString() }
+                """
                 htmlResponse(response, content, 404)
             
 
