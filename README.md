@@ -4,38 +4,43 @@
 
 [Proto](https://github.com/droptype/proto) is a front-end web prototyping tool, combining markup ([Jade](http://jade-lang.com/)), script ([CoffeeScript](http://coffeescript.org)), and style ([Stylus](http://learnboost.github.com/stylus/)) into a single page. It creates a set of files each representing one of those three facets of the page, plus files for notes and settings, and serves up their rendered form. Every time the page is loaded, those files are compiled on-the-fly. It's helpful for creating prototypes using CoffeeScript, Jade, and Stylus, without having to set up a build process and environment.
 
-See [this Marquee post](http://marquee.by/alecperkins/proto/) for an explanation of the motivation, as well as a walkthrough.
+* [Repository](https://github.com/droptype/proto)
+* [Issues](https://github.com/droptype/proto/issues)
+* [Example Proto project as Gist](https://gist.github.com/3894924)
+* [Motivation & walkthrough](http://marquee.by/alecperkins/proto/)
 
-[Example Proto project as Gist](https://gist.github.com/3894924)
+
 
 ## Installation
 
 Proto is a command-line tool built in [Node](http://nodejs.org/), specifically [CoffeeScript](http://coffeescript.org), and is available through [npm](https://npmjs.org/).
 
-    npm install -g proto-cli
+    $ npm install -g proto-cli
 
 or from source
 
-    git clone git://github.com/droptype/proto.git
-    cd proto
-    cake build
-    npm install -g .
+    $ git clone git://github.com/droptype/proto.git
+    $ cd proto
+    $ mkdir lib
+    $ cake build
+    $ npm install -g .
 
-`cake build` will compile `src/proto.coffee` into `lib/proto.js` (ignored by git).
+`cake build` will compile `src/*.coffee` into `lib/*.js` (ignored by git).
 
 Proto needs to be installed globally using `-g` so it can create the necessary command in `/usr/local/bin`.
+
 
 
 ## Usage
 
 ### Init
 
-    proto -i <project_name>
-    proto -ig <gist_id_or_url> [<project_name>]
+    $ proto -i <project_name>
+    $ proto -ig <gist_id_or_url> [<project_name>]
 
 Initializes the project by creating a folder with the specified name and adding five files: `markup.jade`, `script.coffee`, `style.styl`, `settings.json`, and `notes.md`.
 
-e.g. `proto -i my_project` creates a folder called `my_project` in the current working directory
+e.g. `$ proto -i my_project` creates a folder called `my_project` in the current working directory
 
     my_project/
         markup.jade       - the source for the markup code
@@ -51,11 +56,11 @@ You can also load a Gisted project (see below for how to create one). `proto -ig
 
 To serve the project at [localhost:5000](http://localhost:5000):
 
-    proto <project_name>
+    $ proto <project_name>
 
 Or specify a port:
 
-    proto <project_name> -p 8080
+    $ proto <project_name> -p 8080
 
 This starts a server that serves the compiled markup, script, and style on the specified port (default 5000). The source files are compiled every time the page is requested.
 
@@ -68,8 +73,8 @@ To have additional libraries loaded, list them in `script_libraries` or `style_l
 
 To create a GitHub [Gist](https://gist.github.com) with the project's contents:
 
-    proto -g <project_name>
-    proto -g <project_name> --public
+    $ proto -g <project_name>
+    $ proto -g <project_name> --public
 
 This will upload the five files in the specified project folder to an anonymous Gist. By default, the Gist is private. Adding the `--public` flag will make it a public Gist. But, anonymous Gists aren't terribly useful besides one-off sharing, so *Authenticated* Gists are recommended.
 
@@ -77,13 +82,24 @@ This will upload the five files in the specified project folder to an anonymous 
 
 To create the Gist under your username, first authenticate with GitHub using:
 
-    proto --github <username> <password>
-    proto --github <username> "<password with spaces>"
+    $ proto --github <username> <password>
+    $ proto --github <username> "<password with spaces>"
 
 This will use the GitHub API to [generate an access token](http://developer.github.com/v3/oauth/#create-a-new-authorization) that is stored in `~/.proto-cli`. Your username and password are *never* stored.
 
 Now, all Gists you create will be associated with your account. This has several benefits, including making the Proto project a git repo with the remote set to the Gist, so you can keep updating the Proto's Gist. Using `proto -g <project_name>` on a project that has already been Gisted with authentication will commit and push your changes to the same Gist, instead of creating a new one.
 
+
+
+### Viewer
+
+Proto includes a web viewer running at [proto.es](http://proto.es), which will rendered the specified Gist the same as the command-line would. It allows for easy sharing of the rendered Proto project, even specific versions of it (since it's just a git repo).
+
+Example with the [sample project](https://gist.github.com/3894924): [proto.es/3894924](http://proto.es/3894924) ([older version](http://proto.es/3894924/e7496f08d10dce02db7209473912a1aa0676ce13))
+
+The viewer is running on Heroku, with an alternate url that also works: [proto-cli.herokuapp.com](http://proto-cli.herokuapp.com). You can run your own viewer if you like. It's a Node-based web app located in [viewer/app.coffee](https://github.com/droptype/proto/blob/master/viewer/app.coffee).
+
+Note: [Droptype](http://github.com/droptype) does have analytics code on the viewer, so we can monitor usage and make improvements. But, this code is only added to the page if the Gist is public, and only tracks from the `proto.es` and `proto-cli.herokuapp.com` domains. See exactly what it does in the [source](https://github.com/droptype/proto/blob/master/viewer/app.coffee).
 
 
 
@@ -98,7 +114,15 @@ Now, all Gists you create will be associated with your account. This has several
 Convention. Proto restricts the sources to one file for each type to limit the kinds of things that can be built with it. It's a tool for prototyping relatively small interactions, kind of like a command-line version of [Pad Hacker](http://padhacker.net) or [JSFiddle](http://jsfiddle.net). Keeping the projects simple also makes it easy for others to understand quickly.
 
 
+
+## Authors
+
+* [Alec Perkins](http://github.com/alecperkins), [Droptype Inc](http://droptype.com)
+
+
+
 ## License
 
 Unlicensed aka Public Domain. See [/UNLICENSE](https://github.com/droptype/proto/blob/master/UNLICENSE) for more information.
+
 
