@@ -86,9 +86,7 @@ gistProject = (project_name, public_gist=false) ->
     else
         createNewGist(project_name, project_path, public_gist)
 
-
-
-updateGist = (project_name, project_path) ->
+getGistId = (project_path, cb) ->
     git.open project_path, false, (err, repo) ->
         if err?
             quitWithMsg("Unable to open git repo: #{ err }")
@@ -108,16 +106,31 @@ updateGist = (project_name, project_path) ->
                     id = line.split(':')[2].split('.')[0]
                     url = "https://gist.github.com/#{ id }"
                     viewer_url = VIEWER_URL + id
-                    stamp("Updating Gist at: #{ url }")
-                    repo.commitAll '', (err, stdout, stderr) ->
-                        if err?
-                            quitWithMsg("Unable to commit changes (probably no changes?): #{ err }")
-                        else
-                            repo.run 'push origin master', (err, stdout, stderr) ->
-                                if err?
-                                    quitWithMsg("Unable to push changes: #{ err }")
-                                else
-                                    quitWithMsg("Successfully updated Gist: \n#{ url }\n#{ viewer_url }")
+                    cb(id, url, viewer_url)
+
+displayUrlsFor = (project_name) ->
+    project_path = "#{ CWD }/#{ project_name }"
+    getGistId project_path, (id, url, viewer_url) ->
+        quitWithMsg """\n\n
+            #{ project_path }
+
+            Gist ID    : #{ id }
+            Gist URL   : #{ url }
+            Viewer URL : #{ viewer_url }\n\n\n
+        """
+
+updateGist = (project_name, project_path) ->
+    getGistId project_path, (id, url, viewer_url) ->
+        stamp("Updating Gist at: #{ url }")
+        repo.commitAll '', (err, stdout, stderr) ->
+            if err?
+                quitWithMsg("Unable to commit changes (probably no changes?): #{ err }")
+            else
+                repo.run 'push origin master', (err, stdout, stderr) ->
+                    if err?
+                        quitWithMsg("Unable to push changes: #{ err }")
+                    else
+                        quitWithMsg("Successfully updated Gist: \n#{ url }\n#{ viewer_url }")
 
 
 
@@ -284,6 +297,8 @@ exports.run = (args, options) ->
         username = args[0]
         password = args[1]
         authWithGitHub(username, password)
+    else if options.urls
+        displayUrlsFor(new_project)
     else if options.init
         initializeProject(new_project, options.gist)
     else if options.gist
