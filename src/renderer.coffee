@@ -32,7 +32,11 @@ compileStyleLibraries = (style_libraries) ->
         style_libs += "<link rel='stylesheet' href='#{ lib }' type='text/css'>"
     return style_libs
 
-
+compileExtraHeadMarkup = (markup) ->
+    if not markup
+        return ''
+    else
+        return markup
 
 compositePage = (compiled) ->
     page = """
@@ -43,6 +47,7 @@ compositePage = (compiled) ->
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         #{ compiled.script_libraries }
         #{ compiled.style_libraries }
+        #{ compiled.extra_head_markup }
         <style>
             #{ compiled.style }
         </style>
@@ -64,6 +69,7 @@ doCompilation = (sources) ->
         markup              : compileMarkupFile(sources.markup)
         script_libraries    : compileScriptLibraries(sources.settings.script_libraries)
         style_libraries     : compileStyleLibraries(sources.settings.style_libraries)
+        extra_head_markup   : compileExtraHeadMarkup(sources.settings.extra_head_markup)
     return output
 
 

@@ -15,6 +15,8 @@ PROTO_FILES = ['script.coffee', 'markup.jade', 'style.styl', 'settings.json', 'n
 
 CWD         = process.cwd()
 
+# Some helpers...
+
 pad = (val) ->
     if val < 10
         return "0#{ val }"
@@ -33,15 +35,27 @@ quitWithMsg = (message) ->
     stamp(message)
     process.exit()
 
+projectPath = (project_name) ->
+    return "#{ CWD }/#{ project_name }"
 
+
+
+# Fetch a Gist from the GitHub API. Calls the callback whether or not the
+# request was successful.
 getGist = (url, cb) ->
     GIST_API = 'https://api.github.com/gists'
     post_req = rest.get(GIST_API + url)
     post_req.on 'complete', (data, response) ->
         cb(data, response.statusCode)
 
+
+# Initialize a project using the specified project name and the default
+# template. Optionally, use the specified Gist URL/ID to load a gist and use
+# that as the template.
 initializeProject = (project_name, from_gist=false, cli_args) ->
 
+    # Actual init function, taking a set of templates for each file. If the
+    # project_path already exists, warns and quits.
     doInit = (templates) ->
         project_path = "#{ CWD }/#{ project_name }"
 
@@ -55,8 +69,8 @@ initializeProject = (project_name, from_gist=false, cli_args) ->
         else
             quitWithMsg("Error: #{ project_path } already exists")
 
-
     if from_gist
+        # Parse the ID and fetch the Gist, using that as a template.
         gist_id = project_name.split('/')
         gist_id = gist_id[gist_id.length - 1]
         stamp("Fetching Gist: #{ gist_id }")
@@ -65,18 +79,27 @@ initializeProject = (project_name, from_gist=false, cli_args) ->
                 quitWithMsg("Unable to fetch gist: #{ status_code }")
             else
                 if cli_args[1]?
+                    # If there is a second name specified, use that as the
+                    # project name.
                     project_name = cli_args[1]
                 else
+                    # Use the name specified name in the settings file.
                     project_name = JSON.parse(data.files['settings.json'].content).name
+
                 stamp("Fetched Gist, project name is #{ project_name }")
+
+                # Load the Gist contents into a template for the init.
                 templates = {}
-                for k, v of data.files
-                    if k not in PROTO_FILES
+                for f in PROTO_FILES
+                    # If the needed file isn't in the Gist, warn and quit.
+                    if not data.files[f]?
                         quitWithMsg("Gist is invalid Proto project, bad file: #{ k }")
                     templates[k] = v.content
+
                 doInit(templates)
 
     else
+        # Do the init with the default template.
         doInit
             'script.coffee' : 'console.log "loaded"\n\n\n'
             'markup.jade'   : 'h1 Hello, world!\n\n\n'
@@ -97,16 +120,14 @@ initializeProject = (project_name, from_gist=false, cli_args) ->
                 ],
                 "style_libraries": [
                     "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css"
-                ]
+                ],
+                "extra_head_markup": "<meta name='viewport' content='width=device-width'>"
             }"""
 
 
-
-
-
+# Send the project to a Gist, creating a new one or updating an existing one.
 gistProject = (project_name, public_gist=false) ->
-    # TODO: DRY this up
-    project_path = "#{ CWD }/#{ project_name }"
+    project_path = projectPath(project_name)
 
     if not fs.existsSync(project_path)
         quitWithMsg("Error: #{ project_name } not found. Initialize with `proto -i #{ project_name }`.")
@@ -115,6 +136,7 @@ gistProject = (project_name, public_gist=false) ->
         updateGist(project_name, project_path)
     else
         createNewGist(project_name, project_path, public_gist)
+
 
 getGistId = (project_path, cb) ->
     git.open project_path, false, (err, repo) ->
@@ -138,8 +160,9 @@ getGistId = (project_path, cb) ->
                     viewer_url = VIEWER_URL + id
                     cb(id, url, viewer_url)
 
+
 displayUrlsFor = (project_name) ->
-    project_path = "#{ CWD }/#{ project_name }"
+    project_path = projectPath(project_name)
     getGistId project_path, (id, url, viewer_url) ->
         quitWithMsg """\n\n
             #{ project_path }
@@ -148,6 +171,7 @@ displayUrlsFor = (project_name) ->
             Gist URL   : #{ url }
             Viewer URL : #{ viewer_url }\n\n\n
         """
+
 
 updateGist = (project_name, project_path) ->
     getGistId project_path, (id, url, viewer_url) ->
@@ -163,7 +187,6 @@ updateGist = (project_name, project_path) ->
                         quitWithMsg("Successfully updated Gist: \n#{ url }\n#{ viewer_url }")
 
 
-
 getAuthorization = ->
     target_path = process.env.HOME + '/.proto-cli'
     if fs.existsSync(target_path)
@@ -177,7 +200,6 @@ getAuthorization = ->
         access_token = null
 
     return access_token
-
 
 
 initializeRepo = (project_path, git_push_url, html_url) ->
@@ -197,7 +219,6 @@ initializeRepo = (project_path, git_push_url, html_url) ->
                                 quitWithMsg(err)
                             else
                                 quitWithMsg("Project initialized as git repo with #{ git_push_url } remote")
-
 
 
 createNewGist = (project_name, project_path, public_gist) ->
@@ -222,7 +243,7 @@ createNewGist = (project_name, project_path, public_gist) ->
             post_data.files[f] =
                 content: content.toString()
 
-    # try getting authorization token
+    # Try getting authorization token. If the user hasn't authorized, returns null.
     access_token = getAuthorization()
 
     GIST_API = 'https://api.github.com/gists'
@@ -250,7 +271,6 @@ createNewGist = (project_name, project_path, public_gist) ->
                 stamp("The token in ~/.proto-cli is invalid. Please reauthenticate with `proto --github <username> <password>` or delete ~/.proto-cli")
 
 
-
 authWithGitHub = (username, password) ->
     AUTH_API = 'https://api.github.com/authorizations'
     post_req = rest.post AUTH_API,
@@ -270,9 +290,8 @@ authWithGitHub = (username, password) ->
             sys.puts(JSON.stringify(data))
 
 
-
 serveProject = (project_name, port) ->
-    project_path = "#{ CWD }/#{ project_name }"
+    project_path = projectPath(project_name)
 
     if not fs.existsSync(project_path)
         quitWithMsg("Error: #{ project_name } not found. Initialize with `proto -i #{ project_name }`.")
@@ -310,7 +329,6 @@ serveProject = (project_name, port) ->
         stamp("Listening on http://localhost:#{ port }")
 
     serveContent()
-
 
 
 exports.run = (args, options) ->
