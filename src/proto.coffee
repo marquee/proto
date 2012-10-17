@@ -8,11 +8,12 @@ rest            = require 'restler'
 
 renderer            = require './renderer'
 { htmlResponse }    = require './http_utils'
+VERSION             = require './version'
 
-VERSION = require './version'
-VIEWER_URL = 'http://tranquil-scrubland-4645.herokuapp.com/'
+VIEWER_URL  = 'http://tranquil-scrubland-4645.herokuapp.com/'
+PROTO_FILES = ['script.coffee', 'markup.jade', 'style.styl', 'settings.json', 'notes.md']
 
-CWD = process.cwd()
+CWD         = process.cwd()
 
 pad = (val) ->
     if val < 10
@@ -48,7 +49,7 @@ initializeProject = (project_name, from_gist=false, cli_args) ->
 
         if not fs.existsSync(project_path)
             fs.mkdirSync(project_path)
-            for file_name in ['script.coffee', 'markup.jade', 'style.styl', 'settings.json', 'notes.md']
+            for file_name in PROTO_FILES
                 fs.writeFileSync("#{ project_path }/#{ file_name }", templates[file_name])
             quitWithMsg("#{ project_name } initialized!")
         else
@@ -70,6 +71,8 @@ initializeProject = (project_name, from_gist=false, cli_args) ->
                 stamp("Fetched Gist, project name is #{ project_name }")
                 templates = {}
                 for k, v of data.files
+                    if k not in PROTO_FILES
+                        quitWithMsg("Gist is invalid Proto project, bad file: #{ k }")
                     templates[k] = v.content
                 doInit(templates)
 
