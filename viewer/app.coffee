@@ -44,13 +44,18 @@ handleRequests = (request, response, next) ->
                     settings    : JSON.parse(data.files['settings.json'].content)
                 htmlResponse(response, content)
             else
+                raw_response = github_response.raw.toString()
+                try
+                    github_response_content = JSON.stringify((JSON.parse(raw_response)), null, 4)
+                catch e
+                    github_response_content = raw_response
                 content = """
                     Valid <a href="https://github.com/droptype/proto">Proto</a> Gist not found at
                     <a href="https://api.github.com/gists#{ url }">api.github.com/gists#{ request.url }</a>:
                     #{ github_response.statusCode }
                     <br><br>
                     <pre><code>
-                    #{ github_response.raw.toString() }
+                    #{ github_response_content }
                     </code></pre>
                 """
                 htmlResponse(response, content, 404)
