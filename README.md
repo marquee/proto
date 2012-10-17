@@ -1,4 +1,4 @@
-# Proto, v0.0.5
+# Proto, v0.0.6
 
 [Proto](https://github.com/droptype/proto) is a front-end web prototyping tool, combining markup ([Jade](http://jade-lang.com/)), script ([CoffeeScript](http://coffeescript.org)), and style ([Stylus](http://learnboost.github.com/stylus/)) into a single page. It creates a set of files each representing one of those three facets of the page, plus files for notes and settings, and serves up their rendered form. Every time the page is loaded, those files are compiled on-the-fly. It's helpful for creating prototypes using CoffeeScript, Jade, and Stylus, without having to set up a build process and environment.
 
@@ -29,6 +29,7 @@ Proto needs to be installed globally using `-g` so it can create the necessary c
 ### Init
 
     proto -i <project_name>
+    proto -ig <gist_id_or_url> [<project_name>]
 
 Initializes the project by creating a folder with the specified name and adding five files: `markup.jade`, `script.coffee`, `style.styl`, `settings.json`, and `notes.md`.
 
@@ -40,6 +41,8 @@ e.g. `proto -i my_project` creates a folder called `my_project` in the current w
         style.styl        - the source for the style code
         settings.json     - settings for the project, specifically extra libraries to include into the page
         notes.md          - a place for extra notes
+
+You can also load a Gisted project (see below for how to create one). `proto -ig <gist_id_or_url> [<name>]` will initialize a Proto project using the specified gist as the template, with the name specified in its `settings.json` or the optional specified name.
 
 
 ### Work on a project
@@ -78,6 +81,8 @@ To create the Gist under your username, first authenticate with GitHub using:
 This will use the GitHub API to [generate an access token](http://developer.github.com/v3/oauth/#create-a-new-authorization) that is stored in `~/.proto-cli`. Your username and password are *never* stored.
 
 Now, all Gists you create will be associated with your account. This has several benefits, including making the Proto project a git repo with the remote set to the Gist, so you can keep updating the Proto's Gist. Using `proto -g <project_name>` on a project that has already been Gisted with authentication will commit and push your changes to the same Gist, instead of creating a new one.
+
+
 
 
 ## FAQ

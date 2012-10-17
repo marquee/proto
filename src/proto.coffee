@@ -33,44 +33,71 @@ quitWithMsg = (message) ->
     process.exit()
 
 
+getGist = (url, cb) ->
+    GIST_API = 'https://api.github.com/gists'
+    post_req = rest.get(GIST_API + url)
+    post_req.on 'complete', (data, response) ->
+        cb(data, response.statusCode)
 
-initializeProject = (project_name, from_gist=false) ->
-    # if from gist, pull from api, get name from settings, create folder with name, init with gist contents
-    templates =
-        'script.coffee' : 'console.log "loaded"\n\n\n'
-        'markup.jade'   : 'h1 Hello, world!\n\n\n'
-        'style.styl'    : 'h1\n    font-weight 300\n    font-family Helvetica\n\n\n'
-        'notes.md'      : "# #{ project_name }\n\n\n"
-        'settings.json' : """{
-            "name": "#{ project_name }",
-            "proto_version": "#{ VERSION }",
-            "script_libraries": [
-                "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.1/underscore-min.js",
-                "https://cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.0/underscore.string.min.js",
-                "https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.3.3/coffee-script.min.js",
-                "https://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js",
-                "https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js",
-                "https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.9.0/jquery-ui.min.js",
-                "https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js",
-                "https://raw.github.com/Marak/Faker.js/master/Faker.js"
-            ],
-            "style_libraries": [
-                "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css"
-            ]
-        }"""
+initializeProject = (project_name, from_gist=false, cli_args) ->
+
+    doInit = (templates) ->
+        project_path = "#{ CWD }/#{ project_name }"
+
+        sys.puts("Initializing '#{ project_name }' in #{ project_path }")
+
+        if not fs.existsSync(project_path)
+            fs.mkdirSync(project_path)
+            for file_name in ['script.coffee', 'markup.jade', 'style.styl', 'settings.json', 'notes.md']
+                fs.writeFileSync("#{ project_path }/#{ file_name }", templates[file_name])
+            quitWithMsg("#{ project_name } initialized!")
+        else
+            quitWithMsg("Error: #{ project_path } already exists")
 
 
-    project_path = "#{ CWD }/#{ project_name }"
+    if from_gist
+        gist_id = project_name.split('/')
+        gist_id = gist_id[gist_id.length - 1]
+        stamp("Fetching Gist: #{ gist_id }")
+        getGist '/' + gist_id, (data, status_code) ->
+            if status_code isnt 200
+                quitWithMsg("Unable to fetch gist: #{ status_code }")
+            else
+                if cli_args[1]?
+                    project_name = cli_args[1]
+                else
+                    project_name = JSON.parse(data.files['settings.json'].content).name
+                stamp("Fetched Gist, project name is #{ project_name }")
+                templates = {}
+                for k, v of data.files
+                    templates[k] = v.content
+                doInit(templates)
 
-    sys.puts("Initializing '#{ project_name }' in #{ project_path }")
-
-    if not fs.existsSync(project_path)
-        fs.mkdirSync(project_path)
-        for file_name in ['script.coffee', 'markup.jade', 'style.styl', 'settings.json', 'notes.md']
-            fs.writeFileSync("#{ project_path }/#{ file_name }", templates[file_name])
-        quitWithMsg("#{ project_name } initialized!")
     else
-        quitWithMsg("Error: #{ project_path } already exists")
+        doInit
+            'script.coffee' : 'console.log "loaded"\n\n\n'
+            'markup.jade'   : 'h1 Hello, world!\n\n\n'
+            'style.styl'    : 'h1\n    font-weight 300\n    font-family Helvetica\n\n\n'
+            'notes.md'      : "# #{ project_name }\n\n\n"
+            'settings.json' : """{
+                "name": "#{ project_name }",
+                "proto_version": "#{ VERSION }",
+                "script_libraries": [
+                    "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.1/underscore-min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.0/underscore.string.min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.3.3/coffee-script.min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.9.0/jquery-ui.min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js",
+                    "https://raw.github.com/Marak/Faker.js/master/Faker.js"
+                ],
+                "style_libraries": [
+                    "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css"
+                ]
+            }"""
+
+
 
 
 
@@ -300,7 +327,7 @@ exports.run = (args, options) ->
     else if options.urls
         displayUrlsFor(new_project)
     else if options.init
-        initializeProject(new_project, options.gist)
+        initializeProject(new_project, options.gist, args)
     else if options.gist
         gistProject(new_project, options.public)
     else
