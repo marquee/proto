@@ -10,7 +10,7 @@ renderer            = require './renderer'
 { htmlResponse }    = require './http_utils'
 VERSION             = require './version'
 
-VIEWER_URL  = 'http://tranquil-scrubland-4645.herokuapp.com/'
+VIEWER_URL  = 'http://proto-cli.herokuapp.com/'
 PROTO_FILES = ['script.coffee', 'markup.jade', 'style.styl', 'settings.json', 'notes.md']
 
 CWD         = process.cwd()
