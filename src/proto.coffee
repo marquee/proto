@@ -7,10 +7,10 @@ git             = require 'gitjs'
 rest            = require 'restler'
 
 renderer            = require './renderer'
-{ htmlResponse }    = require '../src/http_utils'
+{ htmlResponse }    = require './http_utils'
 
-proto_version = "0.0.4"
-
+VERSION = require './version'
+VIEWER_URL = 'http://tranquil-scrubland-4645.herokuapp.com/'
 
 CWD = process.cwd()
 
@@ -43,7 +43,7 @@ initializeProject = (project_name, from_gist=false) ->
         'notes.md'      : "# #{ project_name }\n\n\n"
         'settings.json' : """{
             "name": "#{ project_name }",
-            "proto_version": "#{ proto_version }",
+            "proto_version": "#{ VERSION }",
             "script_libraries": [
                 "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.1/underscore-min.js",
                 "https://cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.0/underscore.string.min.js",
@@ -107,6 +107,7 @@ updateGist = (project_name, project_path) ->
                     line = stdout.split('\n')[2]
                     id = line.split(':')[2].split('.')[0]
                     url = "https://gist.github.com/#{ id }"
+                    viewer_url = VIEWER_URL + id
                     stamp("Updating Gist at: #{ url }")
                     repo.commitAll '', (err, stdout, stderr) ->
                         if err?
@@ -116,7 +117,7 @@ updateGist = (project_name, project_path) ->
                                 if err?
                                     quitWithMsg("Unable to push changes: #{ err }")
                                 else
-                                    quitWithMsg("Successfully updated Gist: #{ url }")
+                                    quitWithMsg("Successfully updated Gist: \n#{ url }\n#{ viewer_url }")
 
 
 
@@ -197,6 +198,7 @@ createNewGist = (project_name, project_path, public_gist) ->
     post_req.on 'complete', (data, response) ->
         if response.statusCode is 201
             stamp("Success! Gist created at #{ data.html_url }")
+            stamp("View rendered project at #{ VIEWER_URL + data.id }")
             initializeRepo(project_path, data.git_push_url, data.html_url)
         else
             stamp("Error: #{ response.statusCode }")
