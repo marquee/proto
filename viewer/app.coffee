@@ -22,6 +22,12 @@ handleIndex = (request, response, next) ->
     else
         next()
 
+validGist = (files) ->
+    for f in ['script.coffee', 'markup.jade', 'style.styl', 'settings.json', 'notes.md']
+        if not files?[f]?
+            return false
+    return true
+
 handleRequests = (request, response, next) ->
     unless request.url is '/favicon.ico'
         # The GitHub API doesn't handle trailing slashes, so trim them.
@@ -30,7 +36,7 @@ handleRequests = (request, response, next) ->
             url = url.substring(0, url.length - 1)
 
         getGist url, (data, github_response) ->
-            if github_response.statusCode is 200
+            if github_response.statusCode is 200 and validGist(data.files)
                 content = renderer
                     style       : data.files['style.styl'].content
                     script      : data.files['script.coffee'].content
@@ -39,11 +45,13 @@ handleRequests = (request, response, next) ->
                 htmlResponse(response, content)
             else
                 content = """
-                    <a href="https://github.com/droptype/proto">Proto</a> Gist not found at
+                    Valid <a href="https://github.com/droptype/proto">Proto</a> Gist not found at
                     <a href="https://api.github.com/gists#{ url }">api.github.com/gists#{ request.url }</a>:
                     #{ github_response.statusCode }
                     <br><br>
+                    <pre><code>
                     #{ github_response.raw.toString() }
+                    </code></pre>
                 """
                 htmlResponse(response, content, 404)
             
