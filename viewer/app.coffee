@@ -51,10 +51,12 @@ handleRequests = (request, response, next) ->
                     github_response_content = raw_response
                 content = """
                     Valid <a href="https://github.com/droptype/proto">Proto</a> Gist not found at
-                    <a href="https://api.github.com/gists#{ url }">api.github.com/gists#{ request.url }</a>:
-                    #{ github_response.statusCode }
+                    <a href="https://gist.github.com#{ url }">gist.github.com#{ url }</a>:
                     <br><br>
-                    <pre><code>
+                    <pre style="border: 1px solid #d3d4c7;background: #fdf6e3;padding: 1em;overflow-x: scroll;"><code>
+                    <a href="https://api.github.com/gists#{ url }">GET https://api.github.com/gists#{ url }</a>
+                    #{ github_response.statusCode }
+                    <hr style="border: 0;border-top: 1px solid #d3d4c7;">
                     #{ github_response_content }
                     </code></pre>
                 """
