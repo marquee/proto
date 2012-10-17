@@ -23,6 +23,11 @@ handleIndex = (request, response, next) ->
 
 handleRequests = (request, response, next) ->
     unless request.url is '/favicon.ico'
+        # The GitHub API doesn't handle trailing slashes, so trim them.
+        url = request.url
+        if url[url.length - 1] is '/'
+            url = url.substring(0, url.length - 1)
+
         getGist request.url, (data, res_code) ->
             if res_code is 200
                 content = renderer
@@ -44,3 +49,5 @@ cli.createServer([
     handleIndex
     handleRequests
 ]).listen(port)
+
+
