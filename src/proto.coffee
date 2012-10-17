@@ -6,8 +6,8 @@ express         = require 'express'
 git             = require 'gitjs'
 rest            = require 'restler'
 
-renderer        = require './renderer'
-
+renderer            = require './renderer'
+{ htmlResponse }    = require '../src/http_utils'
 
 proto_version = "0.0.4"
 
@@ -252,12 +252,17 @@ serveProject = (project_name, port) ->
         output = renderer(output)
         return output
 
+    handleRequest = (req, res, next) ->
+        if req.url is '/'
+            htmlResponse(res, doCompilation())
+        else
+            htmlResponse(res, '404 - Proto only handles requests to /', 404)
+
     serveContent = ->
-        app = express()
-        app.get '/', (req, res) ->
-            res.send(doCompilation())
+        cli.createServer([
+            handleRequest
+        ]).listen(port)
         stamp("Listening on http://localhost:#{ port }")
-        app.listen(port)
 
     serveContent()
 
