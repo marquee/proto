@@ -2,11 +2,16 @@ fs              = require 'fs'
 sys             = require 'sys'
 CoffeeScript    = require 'coffee-script'
 
+walk            = require 'walk'
+
 compileScriptFile = (from, to) ->
-    sys.puts('Compiling script')
+    sys.puts("Compiling script: #{ from }")
     script_source = fs.readFileSync(from)
     compiled = CoffeeScript.compile(script_source.toString())
-    fs.writeFileSync(to, compiled)
+    fs.writeFileSync(to.replace('.coffee', '.js'), compiled)
 
-task 'build', 'compile src/proto.coffee > lib/proto.js', ->
-    compileScriptFile('src/proto.coffee', 'lib/proto.js')
+task 'build', 'Compile src/*.coffee > lib/*.coffee', ->
+    walker = walk.walk('src')
+    walker.on 'file', (root, fileStats, next) ->
+        compileScriptFile('src/' + fileStats.name, 'lib/' + fileStats.name)
+        next()

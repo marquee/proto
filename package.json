@@ -16,7 +16,8 @@
     "gitjs": "0.0.5-3",
     "jade": "0.27.6",
     "stylus": "0.29.0",
-    "restler": "2.0.1"
+    "restler": "2.0.1",
+    "walk": "2.2.1"
   },
   "bin": {
     "proto": "./bin/proto"

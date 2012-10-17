@@ -1,21 +1,46 @@
-cli = require 'cli'
+cli                 = require 'cli'
+
+{ htmlResponse }    = require '../src/http_utils'
+renderer            = require '../src/renderer'
+rest                = require 'restler'
+
+
+
+getGist = (url, cb) ->
+    GIST_API = 'https://api.github.com/gists'
+    post_req = rest.get(GIST_API + url)
+    post_req.on 'complete', (data, response) ->
+        cb(data, response.statusCode)
+
+
 
 handleIndex = (request, response, next) ->
-    console.dir(response)
-    response.writeHead 200,
-        'Content-Type': 'text/html'
-    response.end('Hello World!')
+    if request.url is '/'
+        html_content = 'Hello World!'
+        htmlResponse(response, html_content)
+    else
+        next()
+
+handleRequests = (request, response, next) ->
+    unless request.url is '/favicon.ico'
+        getGist request.url, (data, res_code) ->
+            if res_code is 200
+                content = renderer
+                    style       : data.files['style.styl'].content
+                    script      : data.files['script.coffee'].content
+                    markup      : data.files['markup.jade'].content
+                    settings    : JSON.parse(data.files['settings.json'].content)
+                htmlResponse(response, content)
+            else
+                content = 'Gist not found'
+                htmlResponse(response, content, 404)
+            
+
 
 
 port = process.env.PORT or 5000
 
 cli.createServer([
     handleIndex
+    handleRequests
 ]).listen(port)
-
-# Extract rendering/serving portion to own module shared by viewer and cli
-
-# Drop express for just Stack.
-# https://github.com/chriso/cli
-# https://github.com/creationix/creationix/blob/master/indexer.js
-# https://github.com/creationix/stack/wiki/Community-Modules
