@@ -1,6 +1,6 @@
 {
   "name": "proto-cli",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A front-end web prototyping tool, combining markup, style, and script into a served, rendered page.",
   "main": "bin/proto",
   "scripts": {
