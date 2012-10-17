@@ -1,5 +1,12 @@
 #!/usr/bin/env node
 
+/*
+
+    This is the main entry point for proto. It provides a command-line interface
+    to the core proto code in `src/`, using [cli](https://github.com/chriso/cli).
+
+*/
+
 var path = require('path');
 var fs   = require('fs');
 var lib  = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');

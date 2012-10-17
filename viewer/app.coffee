@@ -10,7 +10,7 @@ getGist = (url, cb) ->
     GIST_API = 'https://api.github.com/gists'
     post_req = rest.get(GIST_API + url)
     post_req.on 'complete', (data, response) ->
-        cb(data, response.statusCode)
+        cb(data, response)
 
 
 
@@ -29,8 +29,8 @@ handleRequests = (request, response, next) ->
         if url[url.length - 1] is '/'
             url = url.substring(0, url.length - 1)
 
-        getGist request.url, (data, res_code) ->
-            if res_code is 200
+        getGist request.url, (data, github_response) ->
+            if github_response.statusCode is 200
                 content = renderer
                     style       : data.files['style.styl'].content
                     script      : data.files['script.coffee'].content
@@ -38,7 +38,7 @@ handleRequests = (request, response, next) ->
                     settings    : JSON.parse(data.files['settings.json'].content)
                 htmlResponse(response, content)
             else
-                content = 'Gist not found'
+                content = "<a href='https://github.com/droptype/proto'>Proto</a> Gist not found at <br><br>api.github.com/gists#{ request.url }: #{ github_response.statusCode }<br><br>#{ github_response.raw.toString() }"
                 htmlResponse(response, content, 404)
             
 
