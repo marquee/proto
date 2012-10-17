@@ -160,12 +160,12 @@ getGistId = (project_path, cb) ->
                     id = line.split(':')[2].split('.')[0]
                     url = "https://gist.github.com/#{ id }"
                     viewer_url = VIEWER_URL + id
-                    cb(id, url, viewer_url)
+                    cb(repo, id, url, viewer_url)
 
 
 displayUrlsFor = (project_name) ->
     project_path = projectPath(project_name)
-    getGistId project_path, (id, url, viewer_url) ->
+    getGistId project_path, (repo, id, url, viewer_url) ->
         quitWithMsg """\n\n
             #{ project_path }
 
@@ -176,7 +176,7 @@ displayUrlsFor = (project_name) ->
 
 
 updateGist = (project_name, project_path) ->
-    getGistId project_path, (id, url, viewer_url) ->
+    getGistId project_path, (repo, id, url, viewer_url) ->
         stamp("Updating Gist at: #{ url }")
         repo.commitAll '', (err, stdout, stderr) ->
             if err?
