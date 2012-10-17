@@ -57,6 +57,7 @@ compositePage = (compiled) ->
         <script>
             #{ compiled.script }
         </script>
+        #{ extra_body_markup }
     </body>
     </html>
     """
@@ -70,6 +71,7 @@ doCompilation = (sources) ->
         script_libraries    : compileScriptLibraries(sources.settings.script_libraries)
         style_libraries     : compileStyleLibraries(sources.settings.style_libraries)
         extra_head_markup   : compileExtraHeadMarkup(sources.settings.extra_head_markup)
+        extra_body_markup   : sources.extra_body or ''
     return output
 
 

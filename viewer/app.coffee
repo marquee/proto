@@ -28,6 +28,13 @@ validGist = (files) ->
             return false
     return true
 
+protoDisplayTag = (url) ->
+    return """
+        <div id="proto-cli-tag" style="position:fixed;bottom: 0;left: 0;border: 1px solid #ccc;opacity: 0.7;background: white; font-family: Menlo, Inconsolata, Courier New, monospace;">
+            <a href="http://proto.es">proto.es</a>: <a href="https://gist.github.com#{ url }">gist.github.com#{ url }</a>
+        </div>
+    """
+
 handleRequests = (request, response, next) ->
     unless request.url is '/favicon.ico'
         # The GitHub API doesn't handle trailing slashes, so trim them.
@@ -42,6 +49,7 @@ handleRequests = (request, response, next) ->
                     script      : data.files['script.coffee'].content
                     markup      : data.files['markup.jade'].content
                     settings    : JSON.parse(data.files['settings.json'].content)
+                    extra_body  : protoDisplayTag(url)
                 htmlResponse(response, content)
             else
                 raw_response = github_response.raw.toString()
@@ -50,6 +58,9 @@ handleRequests = (request, response, next) ->
                 catch e
                     github_response_content = raw_response
                 content = """
+                    <style>
+                        body {font-family: Menlo, Inconsolata, Courier New, monospace;}
+                    </style>
                     Valid <a href="https://github.com/droptype/proto">Proto</a> Gist not found at
                     <a href="https://gist.github.com#{ url }">gist.github.com#{ url }</a>:
                     <br><br>
