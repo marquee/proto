@@ -6,7 +6,8 @@
   "scripts": {
   },
   "engines": {
-    "node": ">=0.8.0"
+    "node": "0.8.x",
+    "npm":  "1.1.x"
   },
   "dependencies": {
     "cli": "0.4.4-2",
