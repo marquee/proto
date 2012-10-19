@@ -1,4 +1,5 @@
 cli                 = require 'cli'
+sys                 = require 'sys'
 
 { htmlResponse }    = require '../src/http_utils'
 renderer            = require '../src/renderer'
@@ -9,6 +10,10 @@ rest                = require 'restler'
 getGist = (url, cb) ->
     GIST_API = 'https://api.github.com/gists'
     post_req = rest.get(GIST_API + url)
+    post_req.on 'error', (err, response) ->
+        sys.puts('getGist error:')
+        sys.puts(err)
+        sys.puts(response)
     post_req.on 'complete', (data, response) ->
         cb(data, response)
 
@@ -87,7 +92,7 @@ handleRequests = (request, response, next) ->
             url = url.substring(0, url.length - 1)
 
         getGist url, (data, github_response) ->
-            if github_response.statusCode is 200 and validGist(data.files)
+            if github_response?.statusCode is 200 and validGist(data.files)
                 content = renderer
                     style       : data.files['style.styl'].content
                     script      : data.files['script.coffee'].content
@@ -96,7 +101,7 @@ handleRequests = (request, response, next) ->
                     extra_body  : protoDisplayTag(url, data)
                 htmlResponse(response, content)
             else
-                raw_response = github_response.raw.toString()
+                raw_response = github_response?.raw.toString()
                 try
                     github_response_content = JSON.stringify((JSON.parse(raw_response)), null, 4)
                 catch e
@@ -110,7 +115,7 @@ handleRequests = (request, response, next) ->
                     <br><br>
                     <pre style="border: 1px solid #d3d4c7;background: #fdf6e3;padding: 1em;overflow-x: scroll;"><code>
                     <a href="https://api.github.com/gists#{ url }">GET https://api.github.com/gists#{ url }</a>
-                    #{ github_response.statusCode }
+                    #{ github_response?.statusCode }
                     <hr style="border: 0;border-top: 1px solid #d3d4c7;">
                     #{ github_response_content }
                     </code></pre>
