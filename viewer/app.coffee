@@ -77,7 +77,10 @@ protoDisplayTag = (url, gist_data) ->
     return tag_html
 
 handleRequests = (request, response, next) ->
-    unless request.url is '/favicon.ico'
+    if request.url is '/favicon.ico'
+        response.writeHead(404)
+        response.end()
+    else
         # The GitHub API doesn't handle trailing slashes, so trim them.
         url = request.url
         if url[url.length - 1] is '/'
