@@ -1,6 +1,6 @@
 # Proto 
 
-*v1.0.0*
+*v1.0.1*
 
 [Proto](https://github.com/droptype/proto) is a front-end web prototyping tool, combining markup ([Jade](http://jade-lang.com/)), script ([CoffeeScript](http://coffeescript.org)), and style ([Stylus](http://learnboost.github.com/stylus/)) into a single page. It creates a set of files each representing one of those three facets of the page, plus files for notes and settings, and serves up their rendered form. Every time the page is loaded, those files are compiled on-the-fly. It's helpful for creating prototypes using CoffeeScript, Jade, and Stylus, without having to set up a build process and environment.
 
@@ -117,7 +117,7 @@ Convention. Proto restricts the sources to one file for each type to limit the k
 
 ## Authors
 
-* [Alec Perkins](http://github.com/alecperkins), [Droptype Inc](http://droptype.com)
+* [Alec Perkins](http://github.com/alecperkins) ([Droptype Inc](http://droptype.com))
 
 
 

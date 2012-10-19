@@ -1,6 +1,6 @@
 {
   "name": "proto-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A front-end web prototyping tool, combining markup, style, and script into a served, rendered page.",
   "main": "bin/proto",
   "scripts": {
@@ -25,7 +25,7 @@
     "type": "git",
     "url": "git://github.com/droptype/proto.git"
   },
-  "author": "Alec Perkins <alec@getmarquee.com>",
+  "author": "Alec Perkins <alec@droptype.com>",
   "license": {
       "type": "Unlicense",
       "url": "https://raw.github.com/droptype/proto/master/UNLICENSE"
