@@ -103,7 +103,7 @@ initializeProject = (project_name, from_gist=false, cli_args) ->
     else
         # Do the init with the default template.
         doInit
-            'script.coffee' : 'console.log "loaded"\n\n\n'
+            'script.coffee' : "$ = jQuery\n$ ->\n\t$('meta').append('<title>#{ project_name  }</title>')\n\n"
             'markup.jade'   : 'h1 Hello, world!\n\n\n'
             'style.styl'    : 'h1\n    font-weight 300\n    font-family Helvetica\n\n\n'
             'notes.md'      : "# #{ project_name }\n\n\n"
@@ -260,7 +260,7 @@ createNewGist = (project_name, project_path, public_gist) ->
         stamp("Creating anonymous Gist")
 
     post_req = rest.post(GIST_API, request_options)
-        
+
     post_req.on 'complete', (data, response) ->
         if response.statusCode is 201
             stamp("Success! Gist created at #{ data.html_url }")
