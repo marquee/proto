@@ -7,7 +7,7 @@ git             = require 'gitjs'
 rest            = require 'restler'
 
 renderer            = require './renderer'
-{ htmlResponse }    = require './http_utils'
+{ htmlResponse, staticResponse }    = require './http_utils'
 VERSION             = require './version'
 
 VIEWER_URL  = 'http://proto.es/'
@@ -260,7 +260,7 @@ createNewGist = (project_name, project_path, public_gist) ->
         stamp("Creating anonymous Gist")
 
     post_req = rest.post(GIST_API, request_options)
-        
+
     post_req.on 'complete', (data, response) ->
         if response.statusCode is 201
             stamp("Success! Gist created at #{ data.html_url }")
@@ -322,7 +322,27 @@ serveProject = (project_name, port) ->
         if req.url is '/'
             htmlResponse(res, doCompilation())
         else
-            htmlResponse(res, '404 - Proto only handles requests to /', 404)
+            # TODO: Don't hardcode utf8 to allow for images and other binary files
+            # TODO: Remove hardcoded path to home directory, `~/` doesn't work.
+            fs.readFile '/Users/alexcabrera/.proto/lib' + req.url, 'utf8', (err, data) ->
+                if err
+                    if err.errno == 34
+                        err_msg = '<h1>File not found</h1>'
+                        status_code = 404
+                    else
+                        err_msg = '<h1>Server Error</h1><pre>' + err.toString() + '</pre>'
+                        status_code = 500
+                    htmlResponse(res, err_msg, status_code)
+
+                else
+                    content_type = 'application/oclet-stream'
+                    if /.js$/.test(req.url)
+                        content_type = 'text/javascript'
+                    if /.css$/.test(req.url)
+                        content_type = 'text/css'
+                    staticResponse(res, data, content_type)
+
+
 
     serveContent = ->
         cli.createServer([
