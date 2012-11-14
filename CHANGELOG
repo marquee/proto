@@ -1,4 +1,7 @@
 
+= Version 1.0.2
+    * Bugfix: fix ordering of default proto libraries (jQuery must be first).
+
 = Version 1.0.1
     * Bugfix: fix app crashing when request to GitHub fails (non-404 errors).
     * Bugfix: send 404 when /favicon.ico is requested instead of letting connection timeout.

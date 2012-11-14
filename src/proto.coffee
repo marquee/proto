@@ -111,13 +111,13 @@ initializeProject = (project_name, from_gist=false, cli_args) ->
                 "name": "#{ project_name }",
                 "proto_version": "#{ VERSION }",
                 "script_libraries": [
+                    "https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.9.0/jquery-ui.min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js",
                     "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.1/underscore-min.js",
                     "https://cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.0/underscore.string.min.js",
                     "https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.3.3/coffee-script.min.js",
                     "https://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js",
-                    "https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js",
-                    "https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.9.0/jquery-ui.min.js",
-                    "https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js",
                     "https://raw.github.com/Marak/Faker.js/master/Faker.js"
                 ],
                 "style_libraries": [
