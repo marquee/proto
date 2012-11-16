@@ -1,3 +1,5 @@
+= Version 1.1.0
+    * Enhancement: allow for specifying of Github application credentials by the viewer app to increase the Github API rate limit.
 
 = Version 1.0.2
     * Bugfix: fix ordering of default proto libraries (jQuery must be first).
