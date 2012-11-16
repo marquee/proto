@@ -9,7 +9,18 @@ rest                = require 'restler'
 
 getGist = (url, cb) ->
     GIST_API = 'https://api.github.com/gists'
-    post_req = rest.get(GIST_API + url)
+
+    # Adding these parameters greatly increases the rate limit.
+    if process.env.GITHUB_CLIENT_ID and process.env.GITHUB_CLIENT_SECRET
+        params =
+            client_id       : process.env.GITHUB_CLIENT_ID
+            client_secret   : process.env.GITHUB_CLIENT_SECRET
+    else
+        params = null
+
+    post_req = rest.get GIST_API + url,
+        query: params
+
     post_req.on 'error', (err, response) ->
         sys.puts('getGist error:')
         sys.puts(err)
