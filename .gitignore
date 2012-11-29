@@ -2,3 +2,5 @@ node_modules
 .DS_Store
 lib
 .env
+npm-debug.log
+testproto

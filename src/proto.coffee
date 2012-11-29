@@ -105,7 +105,7 @@ initializeProject = (project_name, from_gist=false, cli_args) ->
         doInit
             'script.coffee' : 'console.log "loaded"\n\n\n'
             'markup.jade'   : 'h1 Hello, world!\n\n\n'
-            'style.styl'    : 'h1\n    font-weight 300\n    font-family Helvetica\n\n\n'
+            'style.styl'    : '@import \'nib\'\n\nh1\n    font-weight 300\n    font-family Helvetica\n\n\n'
             'notes.md'      : "# #{ project_name }\n\n\n"
             'settings.json' : """{
                 "name": "#{ project_name }",

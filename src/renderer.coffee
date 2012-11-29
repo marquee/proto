@@ -1,5 +1,6 @@
 CoffeeScript    = require 'coffee-script'
 Jade            = require 'jade'
+Nib             = require 'nib'
 Stylus          = require 'stylus'
 
 VERSION         = require './VERSION'
@@ -16,7 +17,7 @@ compileMarkupFile = (markup_source) ->
 compileStyleFile = (style_source) ->
     compiled_style = ''
     # This isn't actually async, just bonkers.
-    Stylus.render style_source.toString(), (err, data) ->
+    Stylus(style_source.toString()).use(Nib()).render (err, data) ->
         compiled_style = data
     return compiled_style
 

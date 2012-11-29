@@ -70,6 +70,9 @@ The source files are compiled and inserted into a full `html` template. Librarie
 
 To have additional libraries loaded, list them in `script_libraries` or `style_libraries`. They must be served from somewhere else, like a [CDN](http://cdnjs.com/). The libraries will be inserted in order, to allow for dependencies to be loaded correctly (eg jQuery before Backbone). Any extra markup to be inserted into the `<head>`, like viewport-width `<meta>` tags, can be specified in `extra_head_markup`.
 
+#### nib
+
+Proto includes the [nib](http://visionmedia.github.com/nib/) library for Stylus. To use in a project, just `import 'nib'` in the `style.styl` file and the provided mixins and helpers will be available.
 
 
 ### Gist a project
