@@ -16,10 +16,11 @@ var cli  = require('cli');
 cli.enable('status')
 
 cli.parse({
-    init     : ['i', 'Initialize project'],
+    init     : ['i', 'Initialize project', 'string'],
     port     : ['p', 'Serve on port', 'number', 5000],
-    gist     : ['g', 'Send to gist or load from gist'],
-    urls     : ['u', 'Display urls for project'],
+    gist     : ['g', 'Send to gist or load from gist', 'string'],
+    migrate  : ['m', 'Migrate a project to Proto version', 'string'],
+    urls     : ['u', 'Display urls for project', 'string'],
     version  : ['v', 'Display Proto version'],
     github   : [false, 'Authenticate with GitHub: --github_auth username password'],
     "public" : [false, 'Make a public gist'] 

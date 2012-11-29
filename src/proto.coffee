@@ -292,29 +292,48 @@ authWithGitHub = (username, password) ->
             sys.puts(JSON.stringify(data))
 
 
-serveProject = (project_name, port) ->
+loadProjectData = (project_name, for_migration=false) ->
     project_path = projectPath(project_name)
 
     if not fs.existsSync(project_path)
         quitWithMsg("Error: #{ project_name } not found. Initialize with `proto -i #{ project_name }`.")
 
     sources =
-        script      : project_path + '/script.coffee'
-        markup      : project_path + '/markup.jade'
-        style       : project_path + '/style.styl'
-        settings    : project_path + '/settings.json'
+        script      : project_path + 'script.coffee'
+        markup      : project_path + 'markup.jade'
+        style       : project_path + 'style.styl'
+        settings    : project_path + 'settings.json'
 
-    stamp("Working on #{ project_name }\n#{ project_path }")
+    stamp("Working on #{ project_name }\n#{ project_path }\n")
+
+    checkVersion = (settings) ->
+        if settings.proto_version != VERSION
+            message = "#{ project_name } version (#{ settings.proto_version }) does not match Proto version (#{ VERSION })"
+            if settings.proto_version < VERSION
+                message += "\nMigrate #{ project_name } using `proto -m #{ project_name }`."
+            else
+                message += '\nUpdate Proto using `npm install -g proto-cli`'
+            quitWithMsg(message)
+
+    loadSettings = (settings_source) ->
+        settings = JSON.parse(fs.readFileSync(sources.settings))
+        if not for_migration
+            checkVersion(settings)
+        return settings
 
     loadSources = ->
         source_content = {}
-        for k, v of sources
-            source_content[k] = fs.readFileSync(v)
-        source_content.settings = JSON.parse(source_content.settings)
+        for k in ['script', 'markup', 'style']
+            source_content[k] = fs.readFileSync(sources[k])
+        source_content.settings = loadSettings(source_content.settings)
         return source_content
 
+    return loadSources()    
+
+serveProject = (project_name, port) ->
+
     doCompilation = ->
-        output = loadSources(sources)
+        output = loadProjectData(project_name)
         output = renderer(output)
         return output
 
@@ -330,32 +349,67 @@ serveProject = (project_name, port) ->
         ]).listen(port)
         stamp("Listening on http://localhost:#{ port }")
 
+    # Force a project load to check versions
+    loadProjectData(project_name)
+
     serveContent()
+
+
+migrateProject = (project_name) ->
+    # Migrations, listed in order of execution.
+    #
+    # A migration looks like this:
+    #
+    #    {
+    #        'to_version': 'VERSION',
+    #        'description': 'A description explaining what it does.'
+    #        'migrationFn': (project) ->
+    #             code that modifies the project (in place)
+    #    },
+    #
+    migrations = [
+    ]
+
+    project = loadProjectData(project_name, true)
+
+    if project.settings.proto_version is VERSION
+        quitWithMsg("#{ project_name } is already at v#{ VERSION }")
+
+    stamp("Migrating #{ project_name } to v#{ VERSION }")
+
+    for migration in migrations
+        if migration.to_version > project.settings.proto_version
+            stamp("v#{ project.settings.proto_version } --> v#{ migration.to_version }")
+            migration.migrationFn(project)
+            project.settings.proto_version = migration.to_version
+
+    settings_file = projectPath(project_name) + 'settings.json'
+    fs.writeFileSync(settings_file, JSON.stringify(project.settings, null, '    '))
+
+    quitWithMsg("#{ project_name } migrated")
 
 
 
 exports.run = (args, options) ->
-    new_project = args[0]
+    project_name = args[0]
 
     if options.version
         quitWithMsg("Proto v#{ VERSION }")
-
-    if not new_project
-        if options.init
-            msg = 'Error: Please specify a project name, eg `proto -i <project_name>`'
-        else
-            msg = 'Error: Please specify a project name, eg `proto <project_name>`'
-        quitWithMsg(msg)
 
     if options.github
         username = args[0]
         password = args[1]
         authWithGitHub(username, password)
     else if options.urls
-        displayUrlsFor(new_project)
+        displayUrlsFor(options.urls)
     else if options.init
-        initializeProject(new_project, options.gist, args)
+        initializeProject(options.init, options.gist, args)
     else if options.gist
-        gistProject(new_project, options.public)
+        gistProject(options.gist, options.public)
+    else if options.migrate
+        migrateProject(options.migrate)
     else
-        serveProject(new_project, options.port)
+        project_name = args[0]
+        if not project_name
+            quitWithMsg('Error: Please specify a project name, eg `proto <project_name>`')
+        serveProject(project_name, options.port)
