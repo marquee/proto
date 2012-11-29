@@ -333,8 +333,12 @@ serveProject = (project_name, port) ->
     serveContent()
 
 
+
 exports.run = (args, options) ->
     new_project = args[0]
+
+    if options.version
+        quitWithMsg("Proto v#{ VERSION }")
 
     if not new_project
         if options.init

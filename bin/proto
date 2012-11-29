@@ -13,13 +13,14 @@ var lib  = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
 
 var cli  = require('cli');
 
-cli.enable('version', 'status')
+cli.enable('status')
 
 cli.parse({
     init     : ['i', 'Initialize project'],
     port     : ['p', 'Serve on port', 'number', 5000],
     gist     : ['g', 'Send to gist or load from gist'],
     urls     : ['u', 'Display urls for project'],
+    version  : ['v', 'Display Proto version'],
     github   : [false, 'Authenticate with GitHub: --github_auth username password'],
     "public" : [false, 'Make a public gist'] 
 });
