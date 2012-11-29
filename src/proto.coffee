@@ -11,6 +11,8 @@ renderer            = require './renderer'
 VERSION             = require './version'
 
 VIEWER_URL  = 'http://proto.es/'
+SETTINGS_FILE = process.env.HOME + '/.proto-cli/settings.json'
+
 PROTO_FILES = ['script.coffee', 'markup.jade', 'style.styl', 'settings.json', 'notes.md']
 
 CWD         = process.cwd()
@@ -42,7 +44,6 @@ projectPath = (project_name) ->
 
 # Fetch a Gist from the GitHub API. Calls the callback whether or not the
 # request was successful.
-getGist = (url, cb) ->
 getGist = (url, callback) ->
     GIST_API = 'https://api.github.com/gists'
     post_req = rest.get(GIST_API + url)
@@ -190,17 +191,9 @@ updateGist = (project_name, project_path) ->
 
 
 getAuthorization = ->
-    target_path = process.env.HOME + '/.proto-cli'
-    if fs.existsSync(target_path)
-        auth_file = fs.readFileSync(target_path)
-        try
-            auth_obj = JSON.parse(auth_file)
-        catch e
-            quitWithMsg("Error: Unable to read the access token in #{ target_path }. Please reauthenticate with `proto --github <username> <password>` or delete ~/.proto-cli")
-        access_token = auth_obj.token
-    else
-        access_token = null
-
+    access_token = getSetting('github_authorization')?.token
+    if not access_token
+        quitWithMsg("Error: No access token in ~/.proto-cli/settings.json. Please reauthenticate with `proto --github <username> <password>`.")
     return access_token
 
 
@@ -270,7 +263,19 @@ createNewGist = (project_name, project_path, public_gist) ->
             stamp("Error: #{ response.statusCode }")
             sys.puts(JSON.stringify(data))
             if response.statusCode is 401
-                stamp("The token in ~/.proto-cli is invalid. Please reauthenticate with `proto --github <username> <password>` or delete ~/.proto-cli")
+                stamp("The token in ~/.proto-cli/settings.json is invalid. Please reauthenticate with `proto --github <username> <password>` or delete ~/.proto-cli")
+
+getSetting = (key=null) ->
+    settings = JSON.parse(fs.readFileSync(SETTINGS_FILE))
+    if key
+        return settings[key]
+    else
+        return settings
+
+saveSetting = (key, value) ->
+    settings = getSetting()
+    settings[key] = value
+    fs.writeFileSync(SETTINGS_FILE, JSON.stringify(settings))
 
 
 authWithGitHub = (username, password) ->
@@ -284,8 +289,7 @@ authWithGitHub = (username, password) ->
             note_url    : "https://github.com/droptype/proto"
     post_req.on 'complete',  (data, response) ->
         if response.statusCode is 201
-            target_path = process.env.HOME + '/.proto-cli'
-            fs.writeFileSync(target_path, JSON.stringify(data))
+            saveSetting('github_authorization', data)
             quitWithMsg("Success! GitHub auth token stored in #{ target_path }")
         else
             sys.puts("Error: #{ response.statusCode }")

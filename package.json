@@ -4,6 +4,7 @@
   "description": "A front-end web prototyping tool, combining markup, style, and script into a served, rendered page.",
   "main": "bin/proto",
   "scripts": {
+    "postinstall": "coffee ./src/migrate_proto_settings.coffee"
   },
   "engines": {
     "node": "0.8.x",
