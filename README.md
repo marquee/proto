@@ -117,7 +117,8 @@ Convention. Proto restricts the sources to one file for each type to limit the k
 
 ## Authors
 
-* [Alec Perkins](http://github.com/alecperkins) ([Droptype Inc](http://droptype.com))
+* [Alec Perkins](https://github.com/alecperkins) ([Droptype Inc](http://droptype.com))
+* [Alex Cabrera](https://github.com/alexcabrera) ([Droptype Inc](http://droptype.com))
 
 
 
