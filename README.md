@@ -66,7 +66,10 @@ This starts a server that serves the compiled markup, script, and style on the s
 
 The source files are compiled and inserted into a full `html` template. Libraries specified in `settings.json`, and the CSS compiled from `style.styl`, are added to the `<head>` of the page. `markup.jade` gets compiled to HTML and inserted into the `<body>`, and `script.coffee` gets compiled to JavaScript and added to the end of the `<body>`. (Take a peak at the Proto source for the [full template](https://github.com/droptype/proto/blob/master/src/renderer.coffee#L41) it uses.)
 
-To have additional libraries loaded, list them in `script_libraries` or `style_libraries`. They must be served from somewhere else, like a [CDN](http://cdnjs.com/). Any extra markup to be inserted into the `<head>`, like viewport-width `<meta>` tags, can be specified in `extra_head_markup`.
+#### `settings.json`
+
+To have additional libraries loaded, list them in `script_libraries` or `style_libraries`. They must be served from somewhere else, like a [CDN](http://cdnjs.com/). The libraries will be inserted in order, to allow for dependencies to be loaded correctly (eg jQuery before Backbone). Any extra markup to be inserted into the `<head>`, like viewport-width `<meta>` tags, can be specified in `extra_head_markup`.
+
 
 
 ### Gist a project
@@ -100,6 +103,11 @@ Example with the [sample project](https://gist.github.com/3894924): [proto.es/38
 The viewer is running on Heroku, with an alternate url that also works: [proto-cli.herokuapp.com](http://proto-cli.herokuapp.com). You can run your own viewer if you like. It's a Node-based web app located in [viewer/app.coffee](https://github.com/droptype/proto/blob/master/viewer/app.coffee).
 
 Note: [Droptype](http://github.com/droptype) does have analytics code on the viewer, so we can monitor usage and make improvements. But, this code is only added to the page if the Gist is public, and only tracks from the `proto.es` and `proto-cli.herokuapp.com` domains. See exactly what it does in the [source](https://github.com/droptype/proto/blob/master/viewer/app.coffee).
+
+
+## Developing
+
+To use the from-source version of Proto without having to install it, `cake build && ./bin/proto <project_name>` will compile and run Proto.
 
 
 
