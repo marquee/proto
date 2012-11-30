@@ -1,31 +1,32 @@
 #!/usr/bin/env node
-
+ 
 /*
-
+ 
     This is the main entry point for proto. It provides a command-line interface
     to the core proto code in `src/`, using [cli](https://github.com/chriso/cli).
-
+ 
 */
-
+ 
 var path = require('path');
 var fs   = require('fs');
 var lib  = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
-
+ 
 var cli  = require('cli');
-
+ 
 cli.enable('status')
-
+ 
 cli.parse({
-    init     : ['i', 'Initialize project', 'string'],
-    port     : ['p', 'Serve on port', 'number', 5000],
-    gist     : ['g', 'Send to gist or load from gist', 'string'],
-    migrate  : ['m', 'Migrate a project to Proto version', 'string'],
-    urls     : ['u', 'Display urls for project', 'string'],
-    version  : ['v', 'Display Proto version'],
-    github   : [false, 'Authenticate with GitHub: --github_auth username password'],
-    "public" : [false, 'Make a public gist'] 
+    init            : ['i', 'Initialize project', 'string'],
+    port            : ['p', 'Serve on port', 'number', 5000],
+    gist            : ['g', 'Send to gist or load from gist', 'string'],
+    migrate         : ['m', 'Migrate a project to Proto version', 'string'],
+    urls            : ['u', 'Display urls for project', 'string'],
+    version         : ['v', 'Display Proto version'],
+    github          : [false, 'Authenticate with GitHub: --github_auth username password'],
+    'public'        : [false, 'Make a public gist'],
+    download_libs   : ['d', 'Download local copies of libs specified by settings', 'string']
 });
-
+ 
 cli.main(function(args, options) {
     require(lib + '/proto').run(args, options);
 });

@@ -110,7 +110,7 @@ handleRequests = (request, response, next) ->
                     markup      : data.files['markup.jade'].content
                     settings    : JSON.parse(data.files['settings.json'].content)
                     extra_body  : protoDisplayTag(url, data)
-                htmlResponse(response, content)
+                htmlResponse(request, response, content)
             else
                 raw_response = github_response?.raw.toString()
                 try
@@ -131,10 +131,10 @@ handleRequests = (request, response, next) ->
                     #{ github_response_content }
                     </code></pre>
                 """
-                htmlResponse(response, content, 404)
+                htmlResponse(request, response, content, 404)
             
 
-
+process.env.RUNNING_APP = true
 
 port = process.env.PORT or 5000
 

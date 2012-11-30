@@ -6,14 +6,19 @@ express         = require 'express'
 git             = require 'gitjs'
 rest            = require 'restler'
 
-renderer            = require './renderer'
-{ htmlResponse }    = require './http_utils'
-VERSION             = require './version'
+renderer             = require './renderer'
+{ htmlResponse, cacheResponse }     = require './http_utils'
+{ cacheFileFromURL } = require './cache'
+VERSION              = require './version'
 
-VIEWER_URL  = 'http://proto.es/'
-SETTINGS_FILE = process.env.HOME + '/.proto-cli/settings.json'
+{
+    VIEWER_URL
+    PROTO_DIR
+    SETTINGS_FILE
+    LIB_DIR
+    PROTO_FILES
+} = require './settings'
 
-PROTO_FILES = ['script.coffee', 'markup.jade', 'style.styl', 'settings.json', 'notes.md']
 
 CWD         = process.cwd()
 
@@ -263,7 +268,7 @@ createNewGist = (project_name, project_path, public_gist) ->
             stamp("Error: #{ response.statusCode }")
             sys.puts(JSON.stringify(data))
             if response.statusCode is 401
-                stamp("The token in ~/.proto-cli/settings.json is invalid. Please reauthenticate with `proto --github <username> <password>` or delete ~/.proto-cli")
+                stamp("The token in #{ SETTINGS_FILE } is invalid. Please reauthenticate with `proto --github <username> <password>` or delete ~/.proto-cli")
 
 getSetting = (key=null) ->
     settings = JSON.parse(fs.readFileSync(SETTINGS_FILE))
@@ -275,6 +280,7 @@ getSetting = (key=null) ->
 saveSetting = (key, value) ->
     settings = getSetting()
     settings[key] = value
+    sys.puts(JSON.stringify(settings))
     fs.writeFileSync(SETTINGS_FILE, JSON.stringify(settings))
 
 
@@ -288,9 +294,10 @@ authWithGitHub = (username, password) ->
             note        : "Proto"
             note_url    : "https://github.com/droptype/proto"
     post_req.on 'complete',  (data, response) ->
+        console.dir(data)
         if response.statusCode is 201
             saveSetting('github_authorization', data)
-            quitWithMsg("Success! GitHub auth token stored in #{ target_path }")
+            quitWithMsg("Success! GitHub auth token stored in #{ SETTINGS_FILE }")
         else
             sys.puts("Error: #{ response.statusCode }")
             sys.puts(JSON.stringify(data))
@@ -343,9 +350,9 @@ serveProject = (project_name, port) ->
 
     handleRequest = (req, res, next) ->
         if req.url is '/'
-            htmlResponse(res, doCompilation())
+            htmlResponse(req, res, doCompilation())
         else
-            htmlResponse(res, '404 - Proto only handles requests to /', 404)
+            cacheResponse(req, res)
 
     serveContent = ->
         cli.createServer([
@@ -394,6 +401,12 @@ migrateProject = (project_name) ->
 
 
 
+downloadLibs = (project_name) ->
+    project = loadProjectData(project_name)
+    project.settings.script_libraries.forEach(cacheFileFromURL)
+    project.settings.style_libraries.forEach(cacheFileFromURL)
+
+
 exports.run = (args, options) ->
     project_name = args[0]
 
@@ -412,6 +425,8 @@ exports.run = (args, options) ->
         gistProject(options.gist, options.public)
     else if options.migrate
         migrateProject(options.migrate)
+    else if options.download_libs
+        downloadLibs(options.download_libs)
     else
         project_name = args[0]
         if not project_name
