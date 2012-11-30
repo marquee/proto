@@ -5,6 +5,8 @@ Stylus          = require 'stylus'
 
 VERSION         = require './VERSION'
 
+{ getCacheKey } = require './cache'
+
 
 
 compileScriptFile = (script_source) ->
@@ -24,13 +26,23 @@ compileStyleFile = (style_source) ->
 compileScriptLibraries = (script_libraries) ->
     script_libs = ''
     for lib in script_libraries
-        script_libs += "<script src='#{ lib }'></script>"
+        key = getCacheKey(lib)
+        if key
+            url = key
+        else
+            url = lib
+        script_libs += "<script src='#{ url }'></script>"
     return script_libs
 
 compileStyleLibraries = (style_libraries) ->
     style_libs = ''
     for lib in style_libraries
-        style_libs += "<link rel='stylesheet' href='#{ lib }' type='text/css'>"
+        key = getCacheKey(lib)
+        if key
+            url = key
+        else
+            url = lib
+        style_libs += "<link rel='stylesheet' href='#{ url }' type='text/css'>"
     return style_libs
 
 compileExtraHeadMarkup = (markup) ->

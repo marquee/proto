@@ -13,5 +13,6 @@ compileScriptFile = (from, to) ->
 task 'build', 'Compile src/*.coffee > lib/*.coffee', ->
     walker = walk.walk('src')
     walker.on 'file', (root, fileStats, next) ->
-        compileScriptFile('src/' + fileStats.name, 'lib/' + fileStats.name)
+        if not /.swp$/.test(fileStats.name)
+            compileScriptFile('src/' + fileStats.name, 'lib/' + fileStats.name)
         next()
