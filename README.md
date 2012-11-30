@@ -1,6 +1,6 @@
 # Proto 
 
-*v1.0.1*
+*v1.2.0*
 
 [Proto](https://github.com/droptype/proto) is a front-end web prototyping tool, combining markup ([Jade](http://jade-lang.com/)), script ([CoffeeScript](http://coffeescript.org)), and style ([Stylus](http://learnboost.github.com/stylus/)) into a single page. It creates a set of files each representing one of those three facets of the page, plus files for notes and settings, and serves up their rendered form. Every time the page is loaded, those files are compiled on-the-fly. It's helpful for creating prototypes using CoffeeScript, Jade, and Stylus, without having to set up a build process and environment.
 
@@ -66,8 +66,17 @@ This starts a server that serves the compiled markup, script, and style on the s
 
 The source files are compiled and inserted into a full `html` template. Libraries specified in `settings.json`, and the CSS compiled from `style.styl`, are added to the `<head>` of the page. `markup.jade` gets compiled to HTML and inserted into the `<body>`, and `script.coffee` gets compiled to JavaScript and added to the end of the `<body>`. (Take a peak at the Proto source for the [full template](https://github.com/droptype/proto/blob/master/src/renderer.coffee#L41) it uses.)
 
-To have additional libraries loaded, list them in `script_libraries` or `style_libraries`. They must be served from somewhere else, like a [CDN](http://cdnjs.com/). Any extra markup to be inserted into the `<head>`, like viewport-width `<meta>` tags, can be specified in `extra_head_markup`.
+#### `settings.json`
 
+To have additional libraries loaded, list them in `script_libraries` or `style_libraries`. They must be served from somewhere else, like a [CDN](http://cdnjs.com/). The libraries will be inserted in order, to allow for dependencies to be loaded correctly (eg jQuery before Backbone). Any extra markup to be inserted into the `<head>`, like viewport-width `<meta>` tags, can be specified in `extra_head_markup`.
+
+#### nib
+
+Proto includes the [nib](http://visionmedia.github.com/nib/) library for Stylus. To use in a project, just `import 'nib'` in the `style.styl` file and the provided mixins and helpers will be available.
+
+#### Migrations
+
+Projects created with older versions of Proto can be upgraded to the current version, using the `-m` option, eg `$ proto -m <project_name>`. This will perform the necessary migrations to make the project compatible, usually involving modifying the settings.
 
 ### Gist a project
 
@@ -102,6 +111,21 @@ The viewer is running on Heroku, with an alternate url that also works: [proto-c
 Note: [Droptype](http://github.com/droptype) does have analytics code on the viewer, so we can monitor usage and make improvements. But, this code is only added to the page if the Gist is public, and only tracks from the `proto.es` and `proto-cli.herokuapp.com` domains. See exactly what it does in the [source](https://github.com/droptype/proto/blob/master/viewer/app.coffee).
 
 
+## Developing
+
+To use the from-source version of Proto without having to install it, `cake build && ./bin/proto <project_name>` will compile and run Proto.
+
+### Migrations
+
+Old projects can be updated using the `-m` option. The migrations to each version are listed in an Array, and run in order starting with the first one that is greater than the project's current version. Migrations look like this:
+
+    {
+        'to_version': 'VERSION',
+        'description': 'A description explaining what it does.'
+        'migrationFn': (project) ->
+             code that modifies the project (in place)
+    },
+
 
 ## FAQ
 
@@ -117,7 +141,8 @@ Convention. Proto restricts the sources to one file for each type to limit the k
 
 ## Authors
 
-* [Alec Perkins](http://github.com/alecperkins) ([Droptype Inc](http://droptype.com))
+* [Alec Perkins](https://github.com/alecperkins) ([Droptype Inc](http://droptype.com))
+* [Alex Cabrera](https://github.com/alexcabrera) ([Droptype Inc](http://droptype.com))
 
 
 

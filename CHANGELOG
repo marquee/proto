@@ -1,4 +1,17 @@
 
+= Version 1.2.0
+    * Enhancement: project migration functionality for upgrading projects to newer Proto versions.
+    * Bugfix: version display using -v flag shows Proto version, not CLI library version.
+    * Enhancement: Nib library for Stylus.
+    * Enhancement: Markdown filter for Jade.
+    * Enhancement: `<title>` gets set to project name specified in `settings.json`.
+
+= Version 1.1.0
+    * Enhancement: allow for specifying of Github application credentials by the viewer app to increase the Github API rate limit.
+
+= Version 1.0.2
+    * Bugfix: fix ordering of default proto libraries (jQuery must be first).
+
 = Version 1.0.1
     * Bugfix: fix app crashing when request to GitHub fails (non-404 errors).
     * Bugfix: send 404 when /favicon.ico is requested instead of letting connection timeout.
