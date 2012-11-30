@@ -1,3 +1,11 @@
+
+= Version 1.2.0
+    * Enhancement: project migration functionality for upgrading projects to newer Proto versions.
+    * Bugfix: version display using -v flag shows Proto version, not CLI library version.
+    * Enhancement: Nib library for Stylus.
+    * Enhancement: Markdown filter for Jade.
+    * Enhancement: `<title>` gets set to project name specified in `settings.json`.
+
 = Version 1.1.0
     * Enhancement: allow for specifying of Github application credentials by the viewer app to increase the Github API rate limit.
 
