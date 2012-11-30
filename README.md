@@ -68,7 +68,20 @@ The source files are compiled and inserted into a full `html` template. Librarie
 
 #### `settings.json`
 
-To have additional libraries loaded, list them in `script_libraries` or `style_libraries`. They must be served from somewhere else, like a [CDN](http://cdnjs.com/). The libraries will be inserted in order, to allow for dependencies to be loaded correctly (eg jQuery before Backbone). Any extra markup to be inserted into the `<head>`, like viewport-width `<meta>` tags, can be specified in `extra_head_markup`.
+To have additional libraries loaded, list them in `script_libraries` or `style_libraries`. Any extra markup to be inserted into the `<head>`, like viewport-width `<meta>` tags, can be specified in `extra_head_markup`.
+ 
+#### Libraries
+ 
+Libraries MUST be listed as a string that is the URL to a remote file:
+ 
+    'http://example.com/some/remote/lib.js',
+    'http://example.com/other/remote/lib2.js',
+    ...
+ 
+The libraries will be inserted in order, to allow for dependencies to be loaded correctly (eg jQuery before Backbone). Libraries for a given project that are hosted remotely, on a [CDN](http://cdnjs.com/) for example, can be downloaded to `~/.proto-cli/libraries` using the `proto -d <project_name>` option. When rendering the compiled page, Proto will check to see if that library has been cached locally, and will insert the local URL into the page instead.
+
+Make sure to include the library version in the URL if possible to avoid conflicts in the cache. Libraries are cached using an MD5 of the URL. This way, different versions will not collide as long as the URLs are different. For example, CDNJS does not include the version in the actual filename, (`…libs/jquery/1.7/jquery.js` vs `…libs/jquery/1.8.3/jquery.js`), so multiple versions of jQuery would collide under `jquery.js`. However, the MD5s are completely different (`c36f7e58025607909f55666dfdda14cc` vs `2a14fb1f1041bd6596c3c083bbc32437`).
+ 
 
 #### nib
 
