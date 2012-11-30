@@ -6,10 +6,10 @@ express         = require 'express'
 git             = require 'gitjs'
 rest            = require 'restler'
 
-renderer             = require './renderer'
+renderer                            = require './renderer'
 { htmlResponse, cacheResponse }     = require './http_utils'
-{ cacheFileFromURL } = require './cache'
-VERSION              = require './version'
+{ cacheFileFromURL }                = require './cache'
+VERSION                             = require './version'
 
 {
     VIEWER_URL
@@ -59,7 +59,18 @@ getGist = (url, callback) ->
 # Initialize a project using the specified project name and the default
 # template. Optionally, use the specified Gist URL/ID to load a gist and use
 # that as the template.
-initializeProject = (project_name, from_gist=false, cli_args) ->
+initializeProject = (project_name, gist_url=null, cli_args) ->
+
+    # No name was specified, so use a generated on in the format
+    # proto-YYYYMMDD-N, where N is an incremental counter to avoid conflicts.
+    if not project_name and not gist_url
+        counter = 1
+        date = new Date()
+        makeName = -> "proto-#{ date.getFullYear() }#{ date.getMonth() + 1 }#{ date.getDate() }-#{ counter }"
+        project_name = makeName()
+        while fs.existsSync(project_name)
+            counter += 1
+            project_name = makeName()
 
     # Actual init function, taking a set of templates for each file. If the
     # project_path already exists, warns and quits.
@@ -76,9 +87,9 @@ initializeProject = (project_name, from_gist=false, cli_args) ->
         else
             quitWithMsg("Error: #{ project_path } already exists")
 
-    if from_gist
+    if gist_url
         # Parse the ID and fetch the Gist, using that as a template.
-        gist_id = project_name.split('/')
+        gist_id = gist_url.split('/')
         gist_id = gist_id[gist_id.length - 1]
         stamp("Fetching Gist: #{ gist_id }")
         getGist '/' + gist_id, (data, status_code) ->
@@ -94,10 +105,10 @@ initializeProject = (project_name, from_gist=false, cli_args) ->
                     else
                         templates[proto_f] = data.files[proto_f].content
 
-                if cli_args[1]?
+                if cli_args[0]?
                     # If there is a second name specified, use that as the
                     # project name.
-                    project_name = cli_args[1]
+                    project_name = cli_args[0]
                 else
                     # Use the name specified name in the settings file.
                     project_name = JSON.parse(templates['settings.json']).name
@@ -408,8 +419,6 @@ downloadLibs = (project_name) ->
 
 
 exports.run = (args, options) ->
-    project_name = args[0]
-
     if options.version
         quitWithMsg("Proto v#{ VERSION }")
 
@@ -419,7 +428,7 @@ exports.run = (args, options) ->
         authWithGitHub(username, password)
     else if options.urls
         displayUrlsFor(options.urls)
-    else if options.init
+    else if options.init?
         initializeProject(options.init, options.gist, args)
     else if options.gist
         gistProject(options.gist, options.public)

@@ -35,10 +35,11 @@ Proto needs to be installed globally using `-g` so it can create the necessary c
 
 ### Init
 
+    $ proto -i
     $ proto -i <project_name>
     $ proto -ig <gist_id_or_url> [<project_name>]
 
-Initializes the project by creating a folder with the specified name and adding five files: `markup.jade`, `script.coffee`, `style.styl`, `settings.json`, and `notes.md`.
+Initializes the project by creating a folder with a generated name or specified name and adding five files: `markup.jade`, `script.coffee`, `style.styl`, `settings.json`, and `notes.md`.
 
 e.g. `$ proto -i my_project` creates a folder called `my_project` in the current working directory
 
@@ -48,6 +49,8 @@ e.g. `$ proto -i my_project` creates a folder called `my_project` in the current
         style.styl        - the source for the style code
         settings.json     - settings for the project, specifically extra libraries to include into the page
         notes.md          - a place for extra notes
+
+Omitting the project name will result in a name following the format `proto-YYYYMMDD-N`, where `N` is an incremental counter starting at `1` and increasing until it is a unique project name for that folder.
 
 You can also load a Gisted project (see below for how to create one). `proto -ig <gist_id_or_url> [<name>]` will initialize a Proto project using the specified gist as the template, with the name specified in its `settings.json` or the optional specified name.
 
