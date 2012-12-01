@@ -12,12 +12,12 @@
   },
   "dependencies": {
     "cli": "0.4.4-2",
-    "coffee-script": "1.3.3",
+    "coffee-script": "1.4.0",
     "gitjs": "0.0.5-3",
-    "jade": "0.27.6",
+    "jade": "0.27.7",
     "markdown": "0.4.0",
     "nib": "0.9.0",
-    "stylus": "0.29.0",
+    "stylus": "0.31.0",
     "restler": "2.0.1",
     "walk": "2.2.1"
   },
