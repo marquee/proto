@@ -4,7 +4,7 @@ sys                 = require 'sys'
 { htmlResponse }    = require '../src/http_utils'
 renderer            = require '../src/renderer'
 rest                = require 'restler'
-
+markdown            = require 'markdown'
 
 
 getGist = (url, cb) ->
@@ -45,18 +45,20 @@ validGist = (files) ->
     return true
 
 protoDisplayTag = (url, gist_data) ->
+    TAG_STYLE = 'font-size: 10px; padding:0 0.25em;position:fixed;bottom: 0;border: 1px solid #ccc;opacity: 0.7;background: white; font-family: Menlo, Inconsolata, Courier New, monospace;'
+
     tag_html = ''
     tag_html = """
-        <div id="proto-cli-tag" style="font-size: 10px; padding:0 0.25em;position:fixed;bottom: 0;left: 0;border: 1px solid #ccc;opacity: 0.7;background: white; font-family: Menlo, Inconsolata, Courier New, monospace;">
+        <div id="Proto-cli-tag" style="left: 0;#{ TAG_STYLE }">
             <a href="http://proto.es">proto.es</a>: <a href="https://gist.github.com#{ url }">gist.github.com#{ url }</a>
             <script>
-                function _ChangeProtoVersion(select) {
+                function _ProtoChangeVersion(select) {
                     var url = "/#{ gist_data.id }/";
                     var selected_history = select.options[select.selectedIndex];
                     window.location = url + selected_history.value;
                 }
             </script>
-            <select onchange="_ChangeProtoVersion(this)">
+            <select onchange="_ProtoChangeVersion(this)">
     """
     if url.split('/').length > 2
         tag_html += "<option value=''>Latest &raquo;</option>"
@@ -73,6 +75,43 @@ protoDisplayTag = (url, gist_data) ->
             </select>
         </div>
     """
+
+    notes_content = markdown.parse(gist_data.files['notes.md'].content)
+
+
+    tag_html += """
+        <iframe id="Proto-notes-box" style="z-index: 9999; position: absolute; left: 0; top: 0;height: 100%;width: 100%;background:rgba(255,255,255,0.8); border: 0;"></iframe>
+
+        <div id="Proto-frame-content" style="display:none;">
+            <div style="font-family: Georgia;margin: 10px auto 0; max-width: 40em; border: 1px solid #ccc; padding: 1em; font-size: 16px; background: white;">
+                <code>notes.md</code><button onclick="_ProtoHideNotes()" style="float: right;">Hide</button><br><hr>
+                #{ notes_content }
+            </div>
+            <script>
+                function _ProtoHideNotes() {
+                    parent.document.getElementById('Proto-notes-box').style.display = 'none';
+                }
+            </script>
+        </div>
+        <div id="Proto-notes-tag" style="right: 0;#{ TAG_STYLE }">
+            <script>
+                (function(){
+                    var _Proto_frame_source = document.getElementById('Proto-frame-content').innerHTML;
+                    var _Proto_notes_frame = document.getElementById('Proto-notes-box').contentWindow.document;
+                    _Proto_notes_frame.open();
+                    _Proto_notes_frame.write(_Proto_frame_source);
+                    _Proto_notes_frame.write('<style>blockquote { font-style: italic; }</style>')
+                    _Proto_notes_frame.close();
+                })();
+                function _ProtoShowNotes() {
+                    document.getElementById('Proto-notes-box').style.display = 'block'
+                }
+            </script>
+            <button onclick="_ProtoShowNotes()">notes</button>
+        </div>
+    """
+
+
     # Add gaug.es tracking code 
     if gist_data.public and process.env.GAUGES
         tag_html += """
