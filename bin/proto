@@ -16,7 +16,7 @@ var cli  = require('cli');
 cli.enable('status')
  
 cli.parse({
-    init            : ['i', 'Initialize project', 'string', ''],
+    init            : ['i', 'Initialize project'],
     port            : ['p', 'Serve on port', 'number', 5000],
     gist            : ['g', 'Send to gist or load from gist', 'string'],
     migrate         : ['m', 'Migrate a project to Proto version', 'string'],

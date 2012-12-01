@@ -321,10 +321,10 @@ loadProjectData = (project_name, for_migration=false) ->
         quitWithMsg("Error: #{ project_name } not found. Initialize with `proto -i #{ project_name }`.")
 
     sources =
-        script      : project_path + 'script.coffee'
-        markup      : project_path + 'markup.jade'
-        style       : project_path + 'style.styl'
-        settings    : project_path + 'settings.json'
+        script      : project_path + '/script.coffee'
+        markup      : project_path + '/markup.jade'
+        style       : project_path + '/style.styl'
+        settings    : project_path + '/settings.json'
 
     stamp("Working on #{ project_name }\n#{ project_path }\n")
 
@@ -405,7 +405,8 @@ migrateProject = (project_name) ->
             migration.migrationFn(project)
             project.settings.proto_version = migration.to_version
 
-    settings_file = projectPath(project_name) + 'settings.json'
+    project.settings.proto_version = VERSION
+    settings_file = projectPath(project_name) + '/settings.json'
     fs.writeFileSync(settings_file, JSON.stringify(project.settings, null, '    '))
 
     quitWithMsg("#{ project_name } migrated")
@@ -428,14 +429,15 @@ exports.run = (args, options) ->
         authWithGitHub(username, password)
     else if options.urls
         displayUrlsFor(options.urls)
-    else if options.init?
-        initializeProject(options.init, options.gist, args)
     else if options.gist
         gistProject(options.gist, options.public)
     else if options.migrate
         migrateProject(options.migrate)
     else if options.download_libs
         downloadLibs(options.download_libs)
+    else if options.init
+        project_name = args[0] or ''
+        initializeProject(project_name, options.gist, args)
     else
         project_name = args[0]
         if not project_name
