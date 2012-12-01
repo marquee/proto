@@ -3,7 +3,7 @@ fs      = require 'fs'
 rest    = require 'restler'
 sys     = require 'sys'
 
-{ PRODUCTION, LIB_DIR } = require './settings'
+{ PRODUCTION, LIB_DIR } = require './SETTINGS'
 
 _generateCacheKey = (url) ->
     url_hash = crypto.createHash('md5')

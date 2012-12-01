@@ -9,7 +9,7 @@ rest            = require 'restler'
 renderer                            = require './renderer'
 { htmlResponse, cacheResponse }     = require './http_utils'
 { cacheFileFromURL }                = require './cache'
-VERSION                             = require './version'
+VERSION                             = require './VERSION'
 
 {
     VIEWER_URL
