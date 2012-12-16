@@ -154,7 +154,7 @@ Old projects can be updated using the `-m` option. The migrations to each versio
 
 Convention. Proto restricts the sources to one file for each type to limit the kinds of things that can be built with it. It's a tool for prototyping relatively small interactions, kind of like a command-line version of [Pad Hacker](http://padhacker.net) or [JSFiddle](http://jsfiddle.net). Keeping the projects simple also makes it easy for others to understand quickly and avoids filling up the Gists with libraries.
 
-
+For a similar tool that caters to more complicated projects, check out [`roots`](http://roots.cx/)
 
 ## Authors
 
