@@ -2,7 +2,6 @@ fs              = require 'fs'
 sys             = require 'sys'
 
 cli             = require 'cli'
-express         = require 'express'
 git             = require 'gitjs'
 rest            = require 'restler'
 
