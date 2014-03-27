@@ -1,2 +1,6 @@
 viewer
 node_modules
+Cakefile
+.slugignore
+Procfile
+testproto
