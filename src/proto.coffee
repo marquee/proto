@@ -127,17 +127,16 @@ initializeProject = (project_name, gist_url=null, cli_args) ->
                 "name": "#{ project_name }",
                 "proto_version": "#{ VERSION }",
                 "script_libraries": [
-                    "https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js",
-                    "https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js",
                     "https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.2/jquery.ui.touch-punch.min.js",
-                    "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js",
-                    "https://cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.0/underscore.string.min.js",
-                    "https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.3.3/coffee-script.min.js",
-                    "https://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js",
-                    "https://raw.github.com/Marak/Faker.js/master/Faker.js"
+                    "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.3/underscore.string.min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.7.1/coffee-script.min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"
                 ],
                 "style_libraries": [
-                    "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css"
+                    "https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/base/jquery.ui.all.css"
                 ],
                 "extra_head_markup": "<meta name='viewport' content='width=device-width'>"
             }"""
