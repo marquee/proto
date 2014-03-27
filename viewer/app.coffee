@@ -80,7 +80,7 @@ protoDisplayTag = (url, gist_data) ->
 
 
     tag_html += """
-        <iframe id="Proto-notes-box" style="display: none;z-index: 9999; position: absolute; left: 0; top: 0;height: 100%;width: 100%;background:rgba(255,255,255,0.8); border: 0;"></iframe>
+        <iframe id="Proto-notes-box" style="display: none;z-index: 9999; position: fixed; left: 0; top: 0;height: 100%;width: 100%;background:rgba(255,255,255,0.8); border: 0;"></iframe>
 
         <div id="Proto-frame-content" style="display:none;">
             <div style="font-family: Georgia;margin: 10px auto 0; max-width: 40em; border: 1px solid #ccc; padding: 1em; font-size: 16px; background: white;">
@@ -112,7 +112,7 @@ protoDisplayTag = (url, gist_data) ->
     """
 
 
-    # Add gaug.es tracking code 
+    # Add gaug.es tracking code
     if gist_data.public and process.env.GAUGES
         tag_html += """
             <script type="text/javascript">
@@ -171,7 +171,7 @@ handleRequests = (request, response, next) ->
                     </code></pre>
                 """
                 htmlResponse(request, response, content, 404)
-            
+
 
 process.env.RUNNING_APP = true
 
