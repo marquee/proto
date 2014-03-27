@@ -169,14 +169,19 @@ getGistId = (project_path, cb) ->
                     # stdout looks like:
                     #
                     #     * remote origin
-                    #     Fetch URL: git@gist.github.com:<id>.git
-                    #     Push  URL: git@gist.github.com:<id>.git
+                    #     Fetch URL: https://gist.github.com/c64e06fd7cd8a9b4ffa3.git
+                    #     Push  URL: https://gist.github.com/c64e06fd7cd8a9b4ffa3.git
                     #     ...
                     line = stdout.split('\n')[2]
-                    id = line.split(':')[2].split('.')[0]
-                    url = "https://gist.github.com/#{ id }"
-                    viewer_url = VIEWER_URL + id
-                    cb(repo, id, url, viewer_url)
+                    id = line.match(/([0-9a-f]+).git/)
+                    if id[1]
+                        id = id[1]
+                        url = "https://gist.github.com/#{ id }"
+                        viewer_url = VIEWER_URL + id
+                        cb(repo, id, url, viewer_url)
+                    else
+                        quitWithMsg('Unable to find gist id. Check .git/config.')
+
 
 
 displayUrlsFor = (project_name) ->
@@ -212,7 +217,8 @@ getAuthorization = ->
     return access_token
 
 
-initializeRepo = (project_path, git_push_url, html_url) ->
+initializeRepo = (project_path, gist_id, html_url) ->
+    git_push_url = "git@gist.github.com:#{ gist_id }.git"
     git.open project_path, true, (err, repo) ->
         if err?
             quitWithMsg("Unable to initialize a git repo: #{ err }")
@@ -273,7 +279,7 @@ createNewGist = (project_name, project_path, public_gist) ->
         if response.statusCode is 201
             stamp("Success! Gist created at #{ data.html_url }")
             stamp("View rendered project at #{ VIEWER_URL + data.id }")
-            initializeRepo(project_path, data.git_push_url, data.html_url)
+            initializeRepo(project_path, data.id, data.html_url)
         else
             stamp("Error: #{ response.statusCode }")
             sys.puts(JSON.stringify(data))
