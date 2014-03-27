@@ -12,6 +12,8 @@ compileScriptFile = (from, to) ->
 
 task 'build', 'Compile src/*.coffee > lib/*.coffee', ->
     walker = walk.walk('src')
+    unless fs.existsSync('lib')
+        fs.mkdirSync('lib')
     walker.on 'file', (root, fileStats, next) ->
         if not /.swp$/.test(fileStats.name)
             compileScriptFile('src/' + fileStats.name, 'lib/' + fileStats.name)
