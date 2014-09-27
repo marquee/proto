@@ -4,10 +4,9 @@
 
 [Proto](https://github.com/marquee/proto) is a front-end web prototyping tool, combining markup ([Jade](http://jade-lang.com/)), script ([CoffeeScript](http://coffeescript.org)), and style ([Stylus](http://learnboost.github.com/stylus/)) into a single page. It creates a set of files each representing one of those three facets of the page, plus files for notes and settings, and serves up their rendered form. Every time the page is loaded, those files are compiled on-the-fly. It's helpful for creating prototypes using CoffeeScript, Jade, and Stylus, without having to set up a build process and environment. [CJSX](https://github.com/jsdf/coffee-react-transform) is supported, and Proto is particularly handy for prototyping [React](http://facebook.github.io/react/) components.
 
-* [Repository](https://github.com/droptype/proto)
-* [Issues](https://github.com/droptype/proto/issues)
+* [Repository](https://github.com/marquee/proto)
+* [Issues](https://github.com/marquee/proto/issues)
 * [Example Proto project as Gist](https://gist.github.com/3894924)
-* [Motivation & walkthrough](http://marquee.by/alecperkins/proto/)
 
 
 
@@ -160,13 +159,13 @@ For a similar tool that caters to more complicated projects, check out [`roots`]
 
 ## Authors
 
-* [Alec Perkins](https://github.com/alecperkins) ([Droptype Inc](http://droptype.com))
-* [Alex Cabrera](https://github.com/alexcabrera) ([Droptype Inc](http://droptype.com))
+* [Alec Perkins](https://github.com/alecperkins) ([Marquee](http://marquee.by))
+* [Alex Cabrera](https://github.com/alexcabrera) ([Marquee](http://marquee.by))
 
 
 
 ## License
 
-Unlicensed aka Public Domain. See [/UNLICENSE](https://github.com/droptype/proto/blob/master/UNLICENSE) for more information.
+Unlicensed aka Public Domain. See [/LICENSE](https://github.com/droptype/proto/blob/master/LICENSE) for more information.
 
 
