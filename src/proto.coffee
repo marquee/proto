@@ -58,7 +58,7 @@ getGist = (url, callback) ->
 # Initialize a project using the specified project name and the default
 # template. Optionally, use the specified Gist URL/ID to load a gist and use
 # that as the template.
-initializeProject = (project_name, gist_url=null, cli_args) ->
+initializeProject = (project_name, gist_url=null, react=false, cli_args) ->
 
     # No name was specified, so use a generated on in the format
     # proto-YYYYMMDD-N, where N is an incremental counter to avoid conflicts.
@@ -116,6 +116,33 @@ initializeProject = (project_name, gist_url=null, cli_args) ->
 
                 doInit(templates)
 
+    else if react
+        # Do the init with the default template.
+        doInit
+            'script.coffee' : """
+                Component = React.createClass
+                    displayName: 'Component'
+                    render: ->
+                        <div className='Component'>
+                            Component! {@props.time}
+                        </div>
+
+                React.renderComponent(Component(time=new Date()), document.getElementById('app'))
+            """
+            'markup.jade'   : '#app\n'
+            'style.styl'    : '@import \'nib\'\n\nh1\n    font-weight 300\n    font-family Helvetica\n\n\n'
+            'notes.md'      : "# #{ project_name }\n\n\n"
+            'settings.json' : """{
+                "name": "#{ project_name }",
+                "proto_version": "#{ VERSION }",
+                "script_libraries": [
+                    "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/react/0.11.2/react.js"
+                ],
+                "style_libraries": [
+                ],
+                "extra_head_markup": "<meta name='viewport' content='width=device-width'>"
+            }"""
     else
         # Do the init with the default template.
         doInit
@@ -441,7 +468,7 @@ exports.run = (args, options) ->
         downloadLibs(options.download_libs)
     else if options.init
         project_name = args[0] or ''
-        initializeProject(project_name, options.gist, args)
+        initializeProject(project_name, options.gist, options.react, args)
     else
         project_name = args[0]
         if not project_name

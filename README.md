@@ -2,7 +2,7 @@
 
 *v1.3.2*
 
-[Proto](https://github.com/droptype/proto) is a front-end web prototyping tool, combining markup ([Jade](http://jade-lang.com/)), script ([CoffeeScript](http://coffeescript.org)), and style ([Stylus](http://learnboost.github.com/stylus/)) into a single page. It creates a set of files each representing one of those three facets of the page, plus files for notes and settings, and serves up their rendered form. Every time the page is loaded, those files are compiled on-the-fly. It's helpful for creating prototypes using CoffeeScript, Jade, and Stylus, without having to set up a build process and environment.
+[Proto](https://github.com/marquee/proto) is a front-end web prototyping tool, combining markup ([Jade](http://jade-lang.com/)), script ([CoffeeScript](http://coffeescript.org)), and style ([Stylus](http://learnboost.github.com/stylus/)) into a single page. It creates a set of files each representing one of those three facets of the page, plus files for notes and settings, and serves up their rendered form. Every time the page is loaded, those files are compiled on-the-fly. It's helpful for creating prototypes using CoffeeScript, Jade, and Stylus, without having to set up a build process and environment. [CJSX](https://github.com/jsdf/coffee-react-transform) is supported, and Proto is particularly handy for prototyping [React](http://facebook.github.io/react/) components.
 
 * [Repository](https://github.com/droptype/proto)
 * [Issues](https://github.com/droptype/proto/issues)
@@ -53,6 +53,8 @@ e.g. `$ proto -i my_project` creates a folder called `my_project` in the current
 Omitting the project name will result in a name following the format `proto-YYYYMMDD-N`, where `N` is an incremental counter starting at `1` and increasing until it is a unique project name for that folder.
 
 You can also load a Gisted project (see below for how to create one). `proto -ig <gist_id_or_url> [<name>]` will initialize a Proto project using the specified gist as the template, with the name specified in its `settings.json` or the optional specified name.
+
+To initialize a React project, which has a CDN-hosted copy of React library and some basic boilerplate instead of the usual libraries, use the `-r` flag when initializing: `proto -ir react_component`.
 
 
 ### Work on a project
