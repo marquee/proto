@@ -19,6 +19,7 @@ cli.parse({
     init            : ['i', 'Initialize project'],
     port            : ['p', 'Serve on port', 'number', 5000],
     gist            : ['g', 'Send to gist or load from gist', 'string'],
+    react           : ['r', 'Initialize with React'],
     migrate         : ['m', 'Migrate a project to Proto version', 'string'],
     urls            : ['u', 'Display urls for project', 'string'],
     version         : ['v', 'Display Proto version'],

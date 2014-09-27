@@ -1,4 +1,5 @@
 CoffeeScript    = require 'coffee-script'
+cjsxTransform   = require 'coffee-react-transform'
 Jade            = require 'jade'
 Nib             = require 'nib'
 Stylus          = require 'stylus'
@@ -10,7 +11,11 @@ VERSION         = require './VERSION'
 
 
 compileScriptFile = (script_source) ->
-    return CoffeeScript.compile(script_source.toString())
+    return CoffeeScript.compile(
+        cjsxTransform(
+            script_source.toString()
+        )
+    )
 
 compileMarkupFile = (markup_source) ->
     template = Jade.compile(markup_source.toString())
