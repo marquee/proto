@@ -33,7 +33,7 @@ getGist = (url, cb) ->
 handleIndex = (request, response, next) ->
     if request.url is '/'
         response.writeHead 303,
-            'Location': 'https://github.com/droptype/proto'
+            'Location': 'https://github.com/marquee/proto'
         response.end()
     else
         next()
@@ -160,7 +160,7 @@ handleRequests = (request, response, next) ->
                     <style>
                         body {font-family: Menlo, Inconsolata, Courier New, monospace;}
                     </style>
-                    Valid <a href="https://github.com/droptype/proto">Proto</a> Gist not found at
+                    Valid <a href="https://github.com/marquee/proto">Proto</a> Gist not found at
                     <a href="https://gist.github.com#{ url }">gist.github.com#{ url }</a>:
                     <br><br>
                     <pre style="border: 1px solid #d3d4c7;background: #fdf6e3;padding: 1em;overflow-x: scroll;"><code>
