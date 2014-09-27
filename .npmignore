@@ -4,3 +4,4 @@ Cakefile
 .slugignore
 Procfile
 testproto
+src
