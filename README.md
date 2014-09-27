@@ -1,6 +1,6 @@
 # Proto 
 
-*v1.3.2*
+*v1.5.0*
 
 [Proto](https://github.com/marquee/proto) is a front-end web prototyping tool, combining markup ([Jade](http://jade-lang.com/)), script ([CoffeeScript](http://coffeescript.org)), and style ([Stylus](http://learnboost.github.com/stylus/)) into a single page. It creates a set of files each representing one of those three facets of the page, plus files for notes and settings, and serves up their rendered form. Every time the page is loaded, those files are compiled on-the-fly. It's helpful for creating prototypes using CoffeeScript, Jade, and Stylus, without having to set up a build process and environment. [CJSX](https://github.com/jsdf/coffee-react-transform) is supported, and Proto is particularly handy for prototyping [React](http://facebook.github.io/react/) components.
 
@@ -18,7 +18,7 @@ Proto is a command-line tool built in [Node](http://nodejs.org/), specifically [
 
 or from source
 
-    $ git clone git://github.com/droptype/proto.git
+    $ git clone git://github.com/marquee/proto.git
     $ cd proto
     $ mkdir lib
     $ cake build
