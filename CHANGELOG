@@ -1,5 +1,8 @@
+= Version 1.5.1
+    * Bugfix: fix install.
+
 = Version 1.5.0
-    * Enhancement: add React support, `-r` initialization flag
+    * Enhancement: add React support, `-r` initialization flag.
 
 = Version 1.4.0
     * Enhancement: upgrade command dependency versions.
