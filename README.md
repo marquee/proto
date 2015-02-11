@@ -20,7 +20,7 @@ or from source
 
     $ git clone git://github.com/marquee/proto.git
     $ cd proto
-    $ mkdir lib
+    $ npm install         (this will fail at the postinstall step, but that’s okay)
     $ cake build
     $ npm install -g
 
@@ -127,7 +127,7 @@ Example with the [sample project](https://gist.github.com/3894924): [proto.es/38
 
 The viewer is running on Heroku, with an alternate url that also works: [proto-cli.herokuapp.com](http://proto-cli.herokuapp.com). You can run your own viewer if you like. It's a Node-based web app located in [viewer/app.coffee](https://github.com/droptype/proto/blob/master/viewer/app.coffee).
 
-*Note: [Droptype](http://github.com/droptype) does have analytics code on the viewer, so we can monitor usage and make improvements. But, this code is only added to the page if the Gist is public, and only tracks from the `proto.es` and `proto-cli.herokuapp.com` domains. See exactly what it does in the [source](https://github.com/droptype/proto/blob/master/viewer/app.coffee).*
+*Note: [Marquee](http://github.com/marquee) does have analytics code on the viewer, so we can monitor usage and make improvements. But, this code is only added to the page if the Gist is public, and only tracks from the `proto.es` and `proto-cli.herokuapp.com` domains. See exactly what it does in the [source](https://github.com/marquee/proto/blob/master/viewer/app.coffee).*
 
 
 
