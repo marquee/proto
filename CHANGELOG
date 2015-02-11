@@ -1,3 +1,8 @@
+= Version 1.6.1
+    * Bugfix: Correctly report version.
+    * Bugfix: Only try to apply project migrations if there are applicable ones.
+    * Bugfix: Correct build-from-source instructions (were missing a step).
+
 = Version 1.6.0
     * Enhancement: serve extra local files.
     * Enhancement: indicate which libraries are cached in their tag.
