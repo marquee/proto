@@ -22,7 +22,7 @@ or from source
     $ cd proto
     $ mkdir lib
     $ cake build
-    $ npm install -g .
+    $ npm install -g
 
 `cake build` will compile `src/*.coffee` into `lib/*.js` (ignored by git).
 
@@ -66,9 +66,9 @@ Or specify a port:
 
     $ proto <project_name> -p 8080
 
-This starts a server that serves the compiled markup, script, and style on the specified port (default 5000). The source files are compiled every time the page is requested.
+This starts a server that serves the compiled markup, script, style, as well as any additional files, on the specified port (default 5000). The source files are compiled every time the page is requested.
 
-The source files are compiled and inserted into a full `html` template. Libraries specified in `settings.json`, and the CSS compiled from `style.styl`, are added to the `<head>` of the page. `markup.jade` gets compiled to HTML and inserted into the `<body>`, and `script.coffee` gets compiled to JavaScript and added to the end of the `<body>`. (Take a peak at the Proto source for the [full template](https://github.com/droptype/proto/blob/master/src/renderer.coffee#L41) it uses.)
+The source files are compiled and inserted into a full `html` template. Libraries specified in `settings.json`, and the CSS compiled from `style.styl`, are added to the `<head>` of the page. `markup.jade` gets compiled to HTML and inserted into the `<body>`, and `script.coffee` gets compiled to JavaScript and added to the end of the `<body>`. (Take a peak at the Proto source for the [full template](https://github.com/droptype/proto/blob/master/src/renderer.coffee#L41) it uses.) Additional files, like images, will be served as well.
 
 #### `settings.json`
 
@@ -103,7 +103,9 @@ To create a GitHub [Gist](https://gist.github.com) with the project's contents:
     $ proto -g <project_name>
     $ proto -g <project_name> --public
 
-This will upload the five files in the specified project folder to an anonymous Gist. By default, the Gist is private. Adding the `--public` flag will make it a public Gist. But, anonymous Gists aren't terribly useful besides one-off sharing, so *Authenticated* Gists are recommended.
+This will upload the five main files in the specified project folder to an anonymous Gist. By default, the Gist is private. Adding the `--public` flag will make it a public Gist. But, anonymous Gists aren't terribly useful besides one-off sharing, so *Authenticated* Gists are recommended. For authenticated Gists, `proto -g` can be used again to update the Gist.
+
+Note: this will not add any additional files in the project to the Gist, since the Gist API does not support adding binary files. However, you may add those manually with `git` once the Gist has been created. Subsequent `proto -g` will include those files after they are added to the repo.
 
 #### Authenticated
 
@@ -119,7 +121,7 @@ Now, all Gists you create will be associated with your account. This has several
 
 ### Viewer
 
-Proto includes a web viewer running at [proto.es](http://proto.es), which will render the specified Gist the same as the command-line would. It allows for easy sharing of the rendered Proto project, even specific versions of it (since it's just a git repo).
+Proto includes a web viewer running at [proto.es](http://proto.es), which will render the specified Gist the same as the command-line would. It allows for easy sharing of the rendered Proto project, even specific versions of it (since it's just a git repo). However, it will not support extra files in Gists, particularly images which cannot be read through the API.
 
 Example with the [sample project](https://gist.github.com/3894924): [proto.es/3894924](http://proto.es/3894924) ([older revision](http://proto.es/3894924/e7496f08d10dce02db7209473912a1aa0676ce13))
 
@@ -145,17 +147,6 @@ Old projects can be updated using the `-m` option. The migrations to each versio
     },
 
 
-## FAQ
-
-### Why not LiveReload?
-
-[LiveReload](http://livereload.com/) is awesome and works great — in fact it works really well alongside Proto — but doesn't serve the files (and nor should it). Certain JavaScript features require the file to be served instead of loaded using `file://` for security reasons. Proto is simpler to use and provides an easy way to initialize the project. It is also intended to be opinionated about the languages and structure it supports, creating simplicity through useful defaults.
-
-### Why can't I have (more/fewer/other) files?
-
-Convention. Proto restricts the sources to one file for each type to limit the kinds of things that can be built with it. It's a tool for prototyping relatively small interactions, kind of like a command-line version of [Pad Hacker](http://padhacker.net) or [JSFiddle](http://jsfiddle.net). Keeping the projects simple also makes it easy for others to understand quickly and avoids filling up the Gists with libraries.
-
-For a similar tool that caters to more complicated projects, check out [`roots`](http://roots.cx/)
 
 ## Authors
 

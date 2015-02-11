@@ -6,7 +6,7 @@ git             = require 'gitjs'
 rest            = require 'restler'
 
 renderer                            = require './renderer'
-{ htmlResponse, cacheResponse }     = require './http_utils'
+{ htmlResponse, fileResponse }      = require './http_utils'
 { cacheFileFromURL }                = require './cache'
 VERSION                             = require './VERSION'
 
@@ -35,7 +35,7 @@ stamp = (args...) ->
     min = pad(t.getMinutes())
     sec = pad(t.getSeconds())
     t = "#{ hour }:#{ min }:#{ sec }"
-    sys.puts("#{ t }: #{ args.join(' ') }")
+    console.info("#{ t }: #{ args.join(' ') }")
 
 quitWithMsg = (message) ->
     stamp(message)
@@ -394,7 +394,7 @@ serveProject = (project_name, port) ->
         if req.url is '/'
             htmlResponse(req, res, doCompilation())
         else
-            cacheResponse(req, res)
+            fileResponse(projectPath(project_name), req, res)
 
     serveContent = ->
         cli.createServer([
