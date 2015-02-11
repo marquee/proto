@@ -34,9 +34,11 @@ compileScriptLibraries = (script_libraries) ->
         key = getCacheKey(lib)
         if key
             url = key
+            cached_from = "data-cached_from='#{ lib }'"
         else
             url = lib
-        script_libs += "<script src='#{ url }'></script>"
+            cached_from = ''
+        script_libs += "<script src='#{ url }' #{ cached_from }></script>"
     return script_libs
 
 compileStyleLibraries = (style_libraries) ->
