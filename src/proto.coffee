@@ -360,7 +360,7 @@ loadProjectData = (project_name, for_migration=false) ->
     stamp("Working on #{ project_name }\n#{ project_path }\n")
 
     checkVersion = (settings) ->
-        if settings.proto_version != VERSION
+        if settings.proto_version isnt VERSION and MIGRATIONS.length > 0
             message = "#{ project_name } version (#{ settings.proto_version }) does not match Proto version (#{ VERSION })"
             if settings.proto_version < VERSION
                 message += "\nMigrate #{ project_name } using `proto -m #{ project_name }`."
@@ -407,6 +407,8 @@ serveProject = (project_name, port) ->
 
     serveContent()
 
+MIGRATIONS = [
+]
 
 migrateProject = (project_name) ->
     # Migrations, listed in order of execution.
@@ -420,8 +422,6 @@ migrateProject = (project_name) ->
     #             code that modifies the project (in place)
     #    },
     #
-    migrations = [
-    ]
 
     project = loadProjectData(project_name, true)
 
@@ -430,7 +430,7 @@ migrateProject = (project_name) ->
 
     stamp("Migrating #{ project_name } to v#{ VERSION }")
 
-    for migration in migrations
+    for migration in MIGRATIONS
         if migration.to_version > project.settings.proto_version
             stamp("v#{ project.settings.proto_version } --> v#{ migration.to_version }")
             migration.migrationFn(project)
