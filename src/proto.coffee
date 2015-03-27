@@ -16,7 +16,7 @@ VERSION                             = require './VERSION'
     SETTINGS_FILE
     LIB_DIR
     PROTO_FILES
-} = require './settings'
+} = require './SETTINGS'
 
 
 CWD         = process.cwd()

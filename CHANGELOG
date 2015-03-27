@@ -1,3 +1,6 @@
+= Version 1.6.2
+    * Bugfix: Fix failure to initialize projects on case-sensitive filesystems.
+
 = Version 1.6.1
     * Bugfix: Correctly report version.
     * Bugfix: Only try to apply project migrations if there are applicable ones.
