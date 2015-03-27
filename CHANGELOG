@@ -1,3 +1,6 @@
+= Version 1.6.3
+    * Bugfix: Prevent publishing unbuilt versions of Proto ಠ_ಠ.
+
 = Version 1.6.2
     * Bugfix: Fix failure to initialize projects on case-sensitive filesystems.
 
