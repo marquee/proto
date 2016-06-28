@@ -2,7 +2,7 @@ fs              = require 'fs'
 sys             = require 'sys'
 
 cli             = require 'cli'
-git             = require 'gitjs'
+git             = require 'simple-git'
 rest            = require 'restler'
 
 renderer                            = require './renderer'
@@ -183,36 +183,27 @@ gistProject = (project_name, public_gist=false) ->
 
 
 getGistId = (project_path, cb) ->
-    git.open project_path, false, (err, repo) ->
+    git(project_path).getRemotes true, (err, remotes) ->
         if err?
-            quitWithMsg("Unable to open git repo: #{ err }")
-        else
-            # Reconstruct the Gist url using the ID extracted from the git remote
-            repo.run 'remote show origin', (err, stdout, stderr) ->
-                if err?
-                    quitWithMsg("Unable to get remotes: #{ err }")
-                else
-                    # stdout looks like:
-                    #
-                    #     * remote origin
-                    #     Fetch URL: https://gist.github.com/c64e06fd7cd8a9b4ffa3.git
-                    #     Push  URL: https://gist.github.com/c64e06fd7cd8a9b4ffa3.git
-                    #     ...
-                    line = stdout.split('\n')[2]
-                    id = line.match(/([0-9a-f]+).git/)
-                    if id[1]
-                        id = id[1]
-                        url = "https://gist.github.com/#{ id }"
-                        viewer_url = VIEWER_URL + id
-                        cb(repo, id, url, viewer_url)
-                    else
-                        quitWithMsg('Unable to find gist id. Check .git/config.')
+            quitWithMsg("Unable to get remotes: #{ err }")
+        id = null
+        for remote in remotes
+            if remote.name is 'origin'
+                id = remote.refs.push.match(/([0-9a-f]+).git$/)
+                if id
+                    id = id[1]
+                    _url = "https://gist.github.com/#{ id }"
+                    viewer_url = VIEWER_URL + id
+                    cb(id, _url, viewer_url)
+                    return
+        unless id
+            quitWithMsg("No gist remote found.")
 
 
 
 displayUrlsFor = (project_name) ->
     project_path = projectPath(project_name)
-    getGistId project_path, (repo, id, url, viewer_url) ->
+    getGistId project_path, (id, url, viewer_url) ->
         quitWithMsg """\n\n
             #{ project_path }
 
@@ -223,13 +214,13 @@ displayUrlsFor = (project_name) ->
 
 
 updateGist = (project_name, project_path) ->
-    getGistId project_path, (repo, id, url, viewer_url) ->
+    getGistId project_path, (id, url, viewer_url) ->
         stamp("Updating Gist at: #{ url }")
-        repo.commitAll '', (err, stdout, stderr) ->
+        git(project_path).add('.').commit 'Update from CLI', (err) ->
             if err?
                 quitWithMsg("Unable to commit changes (probably no changes?): #{ err }")
             else
-                repo.run 'push origin master', (err, stdout, stderr) ->
+                git(project_path).push 'origin', 'master', (err) ->
                     if err?
                         quitWithMsg("Unable to push changes: #{ err }")
                     else
@@ -245,18 +236,18 @@ getAuthorization = ->
 
 initializeRepo = (project_path, gist_id, html_url) ->
     git_push_url = "git@gist.github.com:#{ gist_id }.git"
-    git.open project_path, true, (err, repo) ->
+    git(project_path).init (err) ->
         if err?
-            quitWithMsg("Unable to initialize a git repo: #{ err }")
-        repo.run 'remote add origin ?', [git_push_url], (err, stdout, stderr ) ->
+            quitWithMsg("Unable to init repo: #{ err }")
+        git(project_path).addRemote 'origin', git_push_url, (err) ->
             if err?
                 quitWithMsg("Unable to add the remote to the git repo: #{ err }")
             else
-                repo.run 'add .', (err, stdout, stderr) ->
+                git(project_path).add('.').commit 'Init from CLI', (err) ->
                     if err?
                         quitWithMsg(err)
                     else
-                        repo.run 'pull -f origin master', (err, stdout, stderr) ->
+                        git(project_path).push ['-f', 'origin', 'master'], (err) ->
                             if err?
                                 quitWithMsg(err)
                             else
