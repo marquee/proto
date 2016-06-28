@@ -4,7 +4,7 @@ Jade            = require 'jade'
 Nib             = require 'nib'
 Stylus          = require 'stylus'
 
-VERSION         = require './VERSION'
+VERSION         = require('../package.json').version
 
 { getCacheKey } = require './cache'
 

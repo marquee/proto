@@ -8,7 +8,7 @@ migrations = [
 ]
 
 fs = require 'fs'
-VERSION = require './VERSION'
+VERSION = require('../package.json').version
 
 
 

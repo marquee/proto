@@ -8,7 +8,7 @@ rest            = require 'restler'
 renderer                            = require './renderer'
 { htmlResponse, fileResponse }      = require './http_utils'
 { cacheFileFromURL }                = require './cache'
-VERSION                             = require './VERSION'
+VERSION                             = require('../package.json').version
 
 {
     VIEWER_URL
