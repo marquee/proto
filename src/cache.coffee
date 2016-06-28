@@ -1,7 +1,7 @@
 crypto  = require 'crypto'
 fs      = require 'fs'
 rest    = require 'restler'
-sys     = require 'sys'
+util    = require 'util'
 
 { PRODUCTION, LIB_DIR } = require './SETTINGS'
 
@@ -28,18 +28,18 @@ cacheFileFromURL = (remote_path) ->
 
     key = _generateCacheKey(remote_path)
     target_path = LIB_DIR + key
-    sys.puts("Getting: #{ remote_path }")
+    util.log("Getting: #{ remote_path }")
     get_req = rest.get(remote_path)
     get_req.on 'complete',  (data, response) ->
         if response.statusCode is 200
             fs.writeFile target_path, data, (err) ->
                 if err?
-                    sys.puts("Error saving #{ remote_path }: #{ err }")
+                    util.log("Error saving #{ remote_path }: #{ err }")
                 else
-                    sys.puts("Saved: #{ remote_path }")
+                    util.log("Saved: #{ remote_path }")
         else
-            sys.puts("Error: #{ response.statusCode }")
-            sys.puts(data)
+            util.log("Error: #{ response.statusCode }")
+            util.log(data)
 
 loadFromCache = (key, cb=null) ->
     if cb?
