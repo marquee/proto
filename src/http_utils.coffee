@@ -12,6 +12,13 @@ htmlResponse = (request, response, content, status_code=200) ->
     response.end(content)
     util.log("[#{ status_code }] #{ request.method } #{ request.url }")
 
+redirectResponse = (request, response, new_url) ->
+    response.writeHead 301,
+        'Location'      : new_url
+    response.end()
+    util.log("[#{ 301 }] #{ request.method } #{ request.url } -> #{ new_url }")
+
+
 cacheResponse = (request, response) ->
     cache_key = request.url
     if /.js$/.test(request.url)
@@ -51,7 +58,9 @@ fileResponse = (project_dir, request, response) ->
     else
         cacheResponse(request, response)
 
-module.exports =
-    htmlResponse    : htmlResponse
-    cacheResponse   : cacheResponse
-    fileResponse    : fileResponse
+module.exports = {
+    htmlResponse
+    cacheResponse
+    fileResponse
+    redirectResponse
+}

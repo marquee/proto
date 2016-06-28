@@ -5,7 +5,8 @@
   "main": "bin/proto",
   "scripts": {
     "prepublish": "cake build",
-    "postinstall": "node ./lib/migrate_proto_settings.js"
+    "postinstall": "node ./lib/migrate_proto_settings.js",
+    "start": "./node_modules/.bin/coffee viewer/app.coffee"
   },
   "engines": {
     "node": "4.x.x"

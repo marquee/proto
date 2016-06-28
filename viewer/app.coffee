@@ -1,7 +1,10 @@
 cli                 = require 'cli'
 sys                 = require 'sys'
 
-{ htmlResponse }    = require '../src/http_utils'
+{
+    htmlResponse
+    redirectResponse
+}    = require '../src/http_utils'
 renderer            = require '../src/renderer'
 rest                = require 'restler'
 markdown            = require 'markdown'
@@ -39,6 +42,12 @@ handleIndex = (request, response, next) ->
         next()
 
 validGist = (files) ->
+    for f in ['script.coffee', 'markup.pug', 'style.sass', 'settings.json', 'notes.md']
+        if not files?[f]?
+            return false
+    return true
+
+oldGist = (files) ->
     for f in ['script.coffee', 'markup.jade', 'style.styl', 'settings.json', 'notes.md']
         if not files?[f]?
             return false
@@ -123,7 +132,8 @@ protoDisplayTag = (url, gist_data) ->
                 t.async = true;
                 t.id    = 'gauges-tracker';
                 t.setAttribute('data-site-id', '#{ process.env.GAUGES }');
-                t.src = '//secure.gaug.es/track.js';
+                t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+                t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
                 var s = document.getElementsByTagName('script')[0];
                 s.parentNode.insertBefore(t, s);
               })();
@@ -137,40 +147,45 @@ handleRequests = (request, response, next) ->
         response.end()
     else
         # The GitHub API doesn't handle trailing slashes, so trim them.
-        url = request.url
-        if url[url.length - 1] is '/'
-            url = url.substring(0, url.length - 1)
+        _url = request.url
+        if _url[_url.length - 1] is '/'
+            _url = url.substring(0, url.length - 1)
 
-        getGist url, (data, github_response) ->
-            if github_response?.statusCode is 200 and validGist(data.files)
-                content = renderer
-                    style       : data.files['style.styl'].content
-                    script      : data.files['script.coffee'].content
-                    markup      : data.files['markup.jade'].content
-                    settings    : JSON.parse(data.files['settings.json'].content)
-                    extra_body  : protoDisplayTag(url, data)
-                htmlResponse(request, response, content)
-            else
-                raw_response = github_response?.raw.toString()
-                try
-                    github_response_content = JSON.stringify((JSON.parse(raw_response)), null, 4)
-                catch e
-                    github_response_content = raw_response
-                content = """
-                    <style>
-                        body {font-family: Menlo, Inconsolata, Courier New, monospace;}
-                    </style>
-                    Valid <a href="https://github.com/marquee/proto">Proto</a> Gist not found at
-                    <a href="https://gist.github.com#{ url }">gist.github.com#{ url }</a>:
-                    <br><br>
-                    <pre style="border: 1px solid #d3d4c7;background: #fdf6e3;padding: 1em;overflow-x: scroll;"><code>
-                    <a href="https://api.github.com/gists#{ url }">GET https://api.github.com/gists#{ url }</a>
-                    #{ github_response?.statusCode }
-                    <hr style="border: 0;border-top: 1px solid #d3d4c7;">
-                    #{ github_response_content }
-                    </code></pre>
-                """
-                htmlResponse(request, response, content, 404)
+        getGist _url, (data, github_response) ->
+            if github_response?.statusCode is 200
+                if validGist(data.files)
+                    content = renderer
+                        style       : data.files['style.sass'].content
+                        script      : data.files['script.coffee'].content
+                        markup      : data.files['markup.pug'].content
+                        settings    : JSON.parse(data.files['settings.json'].content)
+                        extra_body  : protoDisplayTag(_url, data)
+                    htmlResponse(request, response, content)
+                    return
+                else if oldGist(data.files)
+                    redirectResponse(request, response, "http://#{ process.env.V1_HOST }#{ request.url }")
+                    return
+
+            raw_response = github_response?.raw.toString()
+            try
+                github_response_content = JSON.stringify((JSON.parse(raw_response)), null, 4)
+            catch e
+                github_response_content = raw_response
+            content = """
+                <style>
+                    body {font-family: Menlo, Inconsolata, Courier New, monospace;}
+                </style>
+                Valid <a href="https://github.com/marquee/proto">Proto</a> Gist not found at
+                <a href="https://gist.github.com#{ url }">gist.github.com#{ url }</a>:
+                <br><br>
+                <pre style="border: 1px solid #d3d4c7;background: #fdf6e3;padding: 1em;overflow-x: scroll;"><code>
+                <a href="https://api.github.com/gists#{ url }">GET https://api.github.com/gists#{ url }</a>
+                #{ github_response?.statusCode }
+                <hr style="border: 0;border-top: 1px solid #d3d4c7;">
+                #{ github_response_content }
+                </code></pre>
+            """
+            htmlResponse(request, response, content, 404)
 
 
 process.env.RUNNING_APP = true
