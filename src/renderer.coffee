@@ -2,7 +2,7 @@ CoffeeScript    = require 'coffee-script'
 cjsxTransform   = require 'coffee-react-transform'
 Jade            = require 'jade'
 Nib             = require 'nib'
-Stylus          = require 'stylus'
+sass            = require 'node-sass'
 
 VERSION         = require('../package.json').version
 
@@ -22,11 +22,10 @@ compileMarkupFile = (markup_source) ->
     return template()
 
 compileStyleFile = (style_source) ->
-    compiled_style = ''
-    # This isn't actually async, just bonkers.
-    Stylus(style_source.toString()).use(Nib()).render (err, data) ->
-        compiled_style = data
-    return compiled_style
+    output = sass.renderSync
+        data: style_source.toString()
+        indentedSyntax: true
+    return output.css
 
 compileScriptLibraries = (script_libraries) ->
     script_libs = ''

@@ -7,6 +7,6 @@ module.exports =
     SETTINGS_FILE   : PROTO_DIR + 'settings.json'
     LIB_DIR         : PROTO_DIR + 'libcache/'
 
-    PROTO_FILES     : ['script.coffee', 'markup.jade', 'style.styl', 'settings.json', 'notes.md']
+    PROTO_FILES     : ['script.coffee', 'markup.jade', 'style.sass', 'settings.json', 'notes.md']
     PRODUCTION      : process.env.PRODUCTION is 1
 
