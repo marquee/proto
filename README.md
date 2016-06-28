@@ -2,7 +2,7 @@
 
 [![NPM version](https://badge.fury.io/js/proto-cli.svg)](http://badge.fury.io/js/proto-cli)
 
-[Proto](https://github.com/marquee/proto) is a front-end web prototyping tool, combining markup ([Jade](http://jade-lang.com/)), script ([CoffeeScript](http://coffeescript.org)), and style ([Stylus](http://learnboost.github.com/stylus/)) into a single page. It creates a set of files each representing one of those three facets of the page, plus files for notes and settings, and serves up their rendered form. Every time the page is loaded, those files are compiled on-the-fly. It's helpful for creating prototypes using CoffeeScript, Jade, and Stylus, without having to set up a build process and environment. [CJSX](https://github.com/jsdf/coffee-react-transform) is supported, and Proto is particularly handy for prototyping [React](http://facebook.github.io/react/) components.
+[Proto](https://github.com/marquee/proto) is a front-end web prototyping tool, combining markup ([Pug](https://github.com/pugjs/pug/)), script ([CoffeeScript](http://coffeescript.org)), and style ([Sass](http://sass-lang.com/)) into a single page. It creates a set of files each representing one of those three facets of the page, plus files for notes and settings, and serves up their rendered form. Every time the page is loaded, those files are compiled on-the-fly. It's helpful for creating prototypes using CoffeeScript, Jade, and Stylus, without having to set up a build process and environment. [CJSX](https://github.com/jsdf/coffee-react-transform) is supported, and Proto is particularly handy for prototyping [React](http://facebook.github.io/react/) components.
 
 * [Repository](https://github.com/marquee/proto)
 * [Issues](https://github.com/marquee/proto/issues)
@@ -43,9 +43,9 @@ Initializes the project by creating a folder with a generated name or specified 
 e.g. `$ proto -i my_project` creates a folder called `my_project` in the current working directory
 
     my_project/
-        markup.jade       - the source for the markup code
+        markup.pug        - the source for the markup code
         script.coffee     - the source for the script code
-        style.styl        - the source for the style code
+        style.sass        - the source for the style code
         settings.json     - settings for the project, specifically extra libraries to include into the page
         notes.md          - a place for extra notes
 
@@ -68,7 +68,7 @@ Or specify a port:
 
 This starts a server that serves the compiled markup, script, style, as well as any additional files, on the specified port (default 5000). The source files are compiled every time the page is requested.
 
-The source files are compiled and inserted into a full `html` template. Libraries specified in `settings.json`, and the CSS compiled from `style.styl`, are added to the `<head>` of the page. `markup.jade` gets compiled to HTML and inserted into the `<body>`, and `script.coffee` gets compiled to JavaScript and added to the end of the `<body>`. (Take a peak at the Proto source for the [full template](https://github.com/droptype/proto/blob/master/src/renderer.coffee#L41) it uses.) Additional files, like images, will be served as well.
+The source files are compiled and inserted into a full `html` template. Libraries specified in `settings.json`, and the CSS compiled from `style.sass`, are added to the `<head>` of the page. `markup.pug` gets compiled to HTML and inserted into the `<body>`, and `script.coffee` gets compiled to JavaScript and added to the end of the `<body>`. (Take a peak at the Proto source for the [full template](https://github.com/droptype/proto/blob/master/src/renderer.coffee#L41) it uses.) Additional files, like images, will be served as well.
 
 #### `settings.json`
 
@@ -87,9 +87,6 @@ The libraries will be inserted in order, to allow for dependencies to be loaded 
 Make sure to include the library version in the URL if possible to avoid conflicts in the cache. Libraries are cached using an MD5 of the URL. This way, different versions will not collide as long as the URLs are different. For example, CDNJS does not include the version in the actual filename, (`…libs/jquery/1.7/jquery.js` vs `…libs/jquery/1.8.3/jquery.js`), so multiple versions of jQuery would collide under `jquery.js`. However, the MD5s are completely different (`c36f7e58025607909f55666dfdda14cc` vs `2a14fb1f1041bd6596c3c083bbc32437`).
  
 
-#### nib
-
-Proto includes the [nib](http://visionmedia.github.com/nib/) library for Stylus. To use in a project, just `import 'nib'` in the `style.styl` file and the provided mixins and helpers will be available.
 
 #### Migrations
 
