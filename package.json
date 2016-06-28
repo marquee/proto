@@ -8,8 +8,7 @@
     "postinstall": "node ./lib/migrate_proto_settings.js"
   },
   "engines": {
-    "node": "0.10.x",
-    "npm": "1.2.x"
+    "node": "4.x.x"
   },
   "dependencies": {
     "cli": "~0.4.5",
