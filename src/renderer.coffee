@@ -1,7 +1,6 @@
 CoffeeScript    = require 'coffee-script'
 cjsxTransform   = require 'coffee-react-transform'
-Jade            = require 'jade'
-Nib             = require 'nib'
+pug             = require 'pug'
 sass            = require 'node-sass'
 
 VERSION         = require('../package.json').version
@@ -18,7 +17,7 @@ compileScriptFile = (script_source) ->
     )
 
 compileMarkupFile = (markup_source) ->
-    template = Jade.compile(markup_source.toString())
+    template = pug.compile(markup_source.toString())
     return template()
 
 compileStyleFile = (style_source) ->

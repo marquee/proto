@@ -129,12 +129,12 @@ initializeProject = (project_name, gist_url=null, react=false, cli_args) ->
 
                 React.renderComponent(Component(time=new Date()), document.getElementById('app'))
             """
+            'markup.pug'    : '#app\n'
             'style.sass'    : """
                 html,
                 body
                     margin: 0
             """
-            'markup.jade'   : '#app\n'
             'notes.md'      : "# #{ project_name }\n\n\n"
             'settings.json' : """{
                 "name": "#{ project_name }",
@@ -267,7 +267,7 @@ createNewGist = (project_name, project_path, public_gist) ->
 
     sources = [
         'script.coffee'
-        'markup.jade'
+        'markup.pug'
         'style.sass'
         'settings.json'
         'notes.md'
@@ -348,7 +348,7 @@ loadProjectData = (project_name, for_migration=false) ->
 
     sources =
         script      : project_path + '/script.coffee'
-        markup      : project_path + '/markup.jade'
+        markup      : project_path + '/markup.pug'
         style       : project_path + '/style.sass'
         settings    : project_path + '/settings.json'
 
