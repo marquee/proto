@@ -341,7 +341,7 @@ authWithGitHub = (username, password) ->
             sys.puts(JSON.stringify(data))
 
 
-loadProjectData = (project_name, for_migration=false) ->
+loadProjectData = (project_name) ->
     project_path = projectPath(project_name)
 
     if not fs.existsSync(project_path)
@@ -356,18 +356,12 @@ loadProjectData = (project_name, for_migration=false) ->
     stamp("Working on #{ project_name }\n#{ project_path }\n")
 
     checkVersion = (settings) ->
-        if settings.proto_version isnt VERSION and MIGRATIONS.length > 0
-            message = "#{ project_name } version (#{ settings.proto_version }) does not match Proto version (#{ VERSION })"
-            if settings.proto_version < VERSION
-                message += "\nMigrate #{ project_name } using `proto -m #{ project_name }`."
-            else
-                message += '\nUpdate Proto using `npm install -g proto-cli`'
-            quitWithMsg(message)
+        if settings.proto_version isnt VERSION
+            console.warn("#{ project_name } version (#{ settings.proto_version }) does not match Proto version (#{ VERSION })")
 
     loadSettings = (settings_source) ->
         settings = JSON.parse(fs.readFileSync(sources.settings))
-        if not for_migration
-            checkVersion(settings)
+        checkVersion(settings)
         return settings
 
     loadSources = ->
@@ -403,41 +397,6 @@ serveProject = (project_name, port) ->
 
     serveContent()
 
-MIGRATIONS = [
-]
-
-migrateProject = (project_name) ->
-    # Migrations, listed in order of execution.
-    #
-    # A migration looks like this:
-    #
-    #    {
-    #        'to_version': 'VERSION',
-    #        'description': 'A description explaining what it does.'
-    #        'migrationFn': (project) ->
-    #             code that modifies the project (in place)
-    #    },
-    #
-
-    project = loadProjectData(project_name, true)
-
-    if project.settings.proto_version is VERSION
-        quitWithMsg("#{ project_name } is already at v#{ VERSION }")
-
-    stamp("Migrating #{ project_name } to v#{ VERSION }")
-
-    for migration in MIGRATIONS
-        if migration.to_version > project.settings.proto_version
-            stamp("v#{ project.settings.proto_version } --> v#{ migration.to_version }")
-            migration.migrationFn(project)
-            project.settings.proto_version = migration.to_version
-
-    project.settings.proto_version = VERSION
-    settings_file = projectPath(project_name) + '/settings.json'
-    fs.writeFileSync(settings_file, JSON.stringify(project.settings, null, '    '))
-
-    quitWithMsg("#{ project_name } migrated")
-
 
 
 downloadLibs = (project_name) ->
@@ -458,8 +417,6 @@ exports.run = (args, options) ->
         displayUrlsFor(options.urls)
     else if options.gist
         gistProject(options.gist, options.public)
-    else if options.migrate
-        migrateProject(options.migrate)
     else if options.download_libs
         downloadLibs(options.download_libs)
     else if options.init

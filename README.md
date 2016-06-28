@@ -132,17 +132,6 @@ The viewer is running on Heroku, with an alternate url that also works: [proto-c
 
 To use the from-source version of Proto without having to install it, `cake build && ./bin/proto <project_name>` will compile and run Proto.
 
-### Migrations
-
-Old projects can be updated using the `-m` option. The migrations to each version are listed in an Array, and run in order starting with the first one that is greater than the project's current version. Migrations look like this:
-
-    {
-        'to_version': 'VERSION',
-        'description': 'A description explaining what it does.'
-        'migrationFn': (project) ->
-             code that modifies the project (in place)
-    },
-
 
 
 ## Authors
