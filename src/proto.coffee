@@ -124,10 +124,10 @@ initializeProject = (project_name, gist_url=null, react=false, cli_args) ->
                     displayName: 'Component'
                     render: ->
                         <div className='Component'>
-                            Component! {@props.time}
+                            Component! {@props.time.toString()}
                         </div>
 
-                React.renderComponent(Component(time=new Date()), document.getElementById('app'))
+                ReactDOM.render(<Component time={new Date()} />, document.getElementById('app'))
             """
             'markup.pug'    : '#app\n'
             'style.sass'    : """
@@ -140,8 +140,9 @@ initializeProject = (project_name, gist_url=null, react=false, cli_args) ->
                 "name": "#{ project_name }",
                 "proto_version": "#{ VERSION }",
                 "script_libraries": [
-                    "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js",
-                    "https://cdnjs.cloudflare.com/ajax/libs/react/0.11.2/react.js"
+                    "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react.js",
+                    "https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react-dom.js"
                 ],
                 "style_libraries": [
                 ],
